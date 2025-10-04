@@ -521,10 +521,23 @@ function showMealReplacement(day, mealTime) {
     // Create modal for recipe selection
     var modal = document.createElement('div');
     modal.className = 'meal-replacement-modal';
-    modal.innerHTML = '<div class="modal-overlay" onclick="closeMealReplacement()"></div>';
+    
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.onclick = function(e) {
+        if (e.target === overlay) {
+            closeMealReplacement();
+        }
+    };
+    modal.appendChild(overlay);
     
     var modalContent = document.createElement('div');
     modalContent.className = 'modal-content';
+    
+    // Stop propagation on modal content clicks
+    modalContent.onclick = function(e) {
+        e.stopPropagation();
+    };
     
     var html = '<div class="modal-header">';
     html += '<h2>Choose ' + mealTime + ' for ' + day + '</h2>';
