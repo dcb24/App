@@ -185,7 +185,7 @@ header p {
 .search-controls input:focus,
 .search-controls select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #ea7928;
 }
 
 /* Recipe Grid */
@@ -1263,11 +1263,13 @@ header p {
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 
-.ingredient-input-container {
+.ingredient-input-container,
+.required-meals-container {
     padding: 20px;
 }
 
-.ingredient-input-row {
+.ingredient-input-row,
+.required-meal-row {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
@@ -1298,6 +1300,22 @@ header p {
 }
 
 .ingredient-count-field:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.required-meal-select {
+    flex: 1;
+    padding: 12px 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    background: white;
+    cursor: pointer;
+}
+
+.required-meal-select:focus {
     outline: none;
     border-color: #667eea;
 }

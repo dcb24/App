@@ -862,8 +862,8 @@ function generateIngredientList() {
             html += '<span class="ingredient-recipes-label">Used in: </span>';
             for (var r = 0; r < ingredientRecipes[ingredientName].length; r++) {
                 var recipeInfo = ingredientRecipes[ingredientName][r];
-                html += '<span class="ingredient-recipe-tag">' + recipeInfo.name;
-                html += ' <small>(' + recipeInfo.day + ' ' + recipeInfo.mealTime + ')</small></span>';
+                html += '<span class="ingredient-recipe-tag">' + recipeInfo.name +'</span>';
+                //html += ' <small>(' + recipeInfo.day + ' ' + recipeInfo.mealTime + ')</small></span>';
                 if (r < ingredientRecipes[ingredientName].length - 1) {
                     html += ', ';
                 }
@@ -954,12 +954,30 @@ function showIngredientInputModal() {
     html += '<button class="close-btn" onclick="closeIngredientInputModal()">&times;</button>';
     html += '</div>';
     html += '<div class="modal-body">';
-    html += '<p style="margin-bottom: 20px; color: #666;">Specify which ingredients should appear in your weekly meal plan and how many times. Click the <strong style="color: #28a745;">+</strong> button to add more ingredients:</p>';
+    html += '<h3 style="color: #667eea; margin-bottom: 15px;"><i class="fas fa-carrot"></i> Ingredients</h3>';
+    html += '<p style="margin-bottom: 20px; color: #666;">Specify which ingredients should appear in your weekly meal plan and how many times. Click the <strong style="color: #28a745;">+</strong> button to add more:</p>';
     html += '<div class="ingredient-input-container" id="ingredientInputContainer">';
     html += '<div class="ingredient-input-row">';
     html += '<input type="text" class="ingredient-input-field" placeholder="Enter ingredient (e.g., carrot)" />';
     html += '<input type="number" class="ingredient-count-field" placeholder="Times" min="1" max="14" value="1" />';
     html += '<button class="add-ingredient-btn" onclick="addIngredientRow()"><i class="fas fa-plus"></i></button>';
+    html += '</div>';
+    html += '</div>';
+    html += '<hr style="margin: 30px 0; border: none; border-top: 2px solid #e9ecef;">';
+    html += '<h3 style="color: #667eea; margin-bottom: 15px;"><i class="fas fa-utensils"></i> Required Meals</h3>';
+    html += '<p style="margin-bottom: 20px; color: #666;">Select specific recipes that must be included in your plan. Click the <strong style="color: #28a745;">+</strong> button to add more:</p>';
+    html += '<div class="required-meals-container" id="requiredMealsContainer">';
+    html += '<div class="required-meal-row">';
+    html += '<select class="required-meal-select">';
+    html += '<option value="">Choose a recipe...</option>';
+    
+    // Add all recipes as options
+    for (var i = 0; i < recipes.length; i++) {
+        html += '<option value="' + recipes[i].recipe_id + '">' + recipes[i].name + '</option>';
+    }
+    
+    html += '</select>';
+    html += '<button class="add-ingredient-btn" onclick="addRequiredMealRow()"><i class="fas fa-plus"></i></button>';
     html += '</div>';
     html += '</div>';
     html += '<button class="generate-ingredients-plan-btn" onclick="generateMealPlanWithIngredients()">';
@@ -996,6 +1014,31 @@ function removeIngredientRow(button) {
     row.remove();
 }
 
+function addRequiredMealRow() {
+    var container = document.getElementById('requiredMealsContainer');
+    var newRow = document.createElement('div');
+    newRow.className = 'required-meal-row';
+    
+    var html = '<select class="required-meal-select">';
+    html += '<option value="">Choose a recipe...</option>';
+    
+    // Add all recipes as options
+    for (var i = 0; i < recipes.length; i++) {
+        html += '<option value="' + recipes[i].recipe_id + '">' + recipes[i].name + '</option>';
+    }
+    
+    html += '</select>';
+    html += '<button class="remove-ingredient-btn" onclick="removeRequiredMealRow(this)"><i class="fas fa-minus"></i></button>';
+    
+    newRow.innerHTML = html;
+    container.appendChild(newRow);
+}
+
+function removeRequiredMealRow(button) {
+    var row = button.parentElement;
+    row.remove();
+}
+
 function generateMealPlanWithIngredients() {
     if (recipes.length === 0) {
         alert('No recipes available. Please add some recipes first.');
@@ -1018,8 +1061,22 @@ function generateMealPlanWithIngredients() {
         }
     }
     
-    if (Object.keys(ingredientRequirements).length === 0) {
-        alert('Please enter at least one ingredient with a count.');
+    // Collect required meals
+    var requiredMealIds = [];
+    var mealRows = document.querySelectorAll('.required-meal-row');
+    
+    for (var i = 0; i < mealRows.length; i++) {
+        var mealSelect = mealRows[i].querySelector('.required-meal-select');
+        var mealId = mealSelect.value;
+        
+        if (mealId) {
+            requiredMealIds.push(mealId);
+        }
+    }
+    
+    // Check if at least one requirement is specified
+    if (Object.keys(ingredientRequirements).length === 0 && requiredMealIds.length === 0) {
+        alert('Please enter at least one ingredient or select at least one required meal.');
         return;
     }
     
@@ -1029,8 +1086,8 @@ function generateMealPlanWithIngredients() {
     // Store ingredient requirements globally for shopping list display
     currentIngredientRequirements = ingredientRequirements;
     
-    // Generate meal plan based on ingredients
-    var result = createMealPlanWithIngredients(ingredientRequirements);
+    // Generate meal plan based on ingredients and required meals
+    var result = createMealPlanWithIngredients(ingredientRequirements, requiredMealIds);
     
     // Display the meal plan
     mealPlan = result.mealPlan;
@@ -1038,16 +1095,18 @@ function generateMealPlanWithIngredients() {
     generateIngredientList();
     
     // Show warning if some ingredients weren't fully used
-    if (result.unusedIngredients.length > 0) {
-        displayUnusedIngredientsWarning(result.unusedIngredients);
+    if (result.unusedIngredients.length > 0 || result.unusedMeals.length > 0) {
+        displayUnusedIngredientsWarning(result.unusedIngredients, result.unusedMeals);
     }
 }
 
-function createMealPlanWithIngredients(ingredientRequirements) {
+function createMealPlanWithIngredients(ingredientRequirements, requiredMealIds) {
     var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     var newMealPlan = {};
     var usedRecipeIds = [];
     var ingredientUsage = {};
+    var requiredMealsToPlace = [];
+    var placedRequiredMeals = [];
     
     // Initialize ingredient usage tracking
     for (var ingredient in ingredientRequirements) {
@@ -1056,6 +1115,19 @@ function createMealPlanWithIngredients(ingredientRequirements) {
                 required: ingredientRequirements[ingredient],
                 used: 0
             };
+        }
+    }
+    
+    // Get required meal recipes
+    if (requiredMealIds && requiredMealIds.length > 0) {
+        for (var i = 0; i < requiredMealIds.length; i++) {
+            var mealId = requiredMealIds[i];
+            for (var j = 0; j < recipes.length; j++) {
+                if (recipes[j].recipe_id === mealId) {
+                    requiredMealsToPlace.push(recipes[j]);
+                    break;
+                }
+            }
         }
     }
     
@@ -1074,12 +1146,77 @@ function createMealPlanWithIngredients(ingredientRequirements) {
     }
     
     // Create meal plan for each day
-    for (var dayIdx = 0; dayIdx < days.length; dayIdx++) {
-        var day = days[dayIdx];
-        newMealPlan[day] = {
-            lunch: selectMealWithIngredientPriority(lunchRecipes, ingredientUsage, usedRecipeIds, 'lunch'),
-            dinner: selectMealWithIngredientPriority(dinnerRecipes, ingredientUsage, usedRecipeIds, 'dinner')
-        };
+    var dayIdx = 0;
+    var mealSlots = [];
+    
+    // Create all meal slots
+    for (var i = 0; i < days.length; i++) {
+        mealSlots.push({ day: days[i], mealTime: 'lunch' });
+        mealSlots.push({ day: days[i], mealTime: 'dinner' });
+    }
+    
+    // First, place required meals in random slots
+    for (var i = 0; i < requiredMealsToPlace.length; i++) {
+        var meal = requiredMealsToPlace[i];
+        var placed = false;
+        
+        // Find a suitable slot for this meal
+        for (var j = 0; j < mealSlots.length; j++) {
+            var slot = mealSlots[j];
+            
+            // Check if this meal is suitable for this time
+            var isSuitable = false;
+            if (slot.mealTime === 'lunch' && (meal.is_lunch === 'True' || meal.is_lunch === true)) {
+                isSuitable = true;
+            } else if (slot.mealTime === 'dinner' && (meal.is_dinner === 'True' || meal.is_dinner === true)) {
+                isSuitable = true;
+            }
+            
+            if (isSuitable) {
+                // Initialize day if needed
+                if (!newMealPlan[slot.day]) {
+                    newMealPlan[slot.day] = { lunch: null, dinner: null };
+                }
+                
+                // Place the meal
+                if (meal.is_full_meal === 'True' || meal.is_full_meal === true) {
+                    newMealPlan[slot.day][slot.mealTime] = [meal];
+                } else {
+                    newMealPlan[slot.day][slot.mealTime] = [meal];
+                }
+                
+                usedRecipeIds.push(meal.recipe_id);
+                placedRequiredMeals.push(meal.recipe_id);
+                
+                // Update ingredient usage
+                updateIngredientUsage(meal, ingredientUsage);
+                
+                // Remove this slot
+                mealSlots.splice(j, 1);
+                placed = true;
+                break;
+            }
+        }
+    }
+    
+    // Initialize all days
+    for (var i = 0; i < days.length; i++) {
+        if (!newMealPlan[days[i]]) {
+            newMealPlan[days[i]] = { lunch: null, dinner: null };
+        }
+    }
+    
+    // Fill remaining slots with ingredient-priority meals
+    for (var i = 0; i < days.length; i++) {
+        var day = days[i];
+        
+        if (!newMealPlan[day].lunch) {
+            newMealPlan[day].lunch = selectMealWithIngredientPriority(lunchRecipes, ingredientUsage, usedRecipeIds, 'lunch');
+        }
+        
+        if (!newMealPlan[day].dinner) {
+            newMealPlan[day].dinner = selectMealWithIngredientPriority(dinnerRecipes, ingredientUsage, usedRecipeIds, 'dinner');
+        }
     }
     
     // Check for unused ingredients
@@ -1096,10 +1233,41 @@ function createMealPlanWithIngredients(ingredientRequirements) {
         }
     }
     
+    // Check for required meals that weren't placed
+    var unusedMeals = [];
+    for (var i = 0; i < requiredMealsToPlace.length; i++) {
+        var mealId = requiredMealsToPlace[i].recipe_id;
+        if (placedRequiredMeals.indexOf(mealId) === -1) {
+            unusedMeals.push(requiredMealsToPlace[i].name);
+        }
+    }
+    
     return {
         mealPlan: newMealPlan,
-        unusedIngredients: unusedIngredients
+        unusedIngredients: unusedIngredients,
+        unusedMeals: unusedMeals
     };
+}
+
+function updateIngredientUsage(recipe, ingredientUsage) {
+    var recipeIngredients = recipe.ingredients.toLowerCase().split(',').map(function(ing) {
+        return ing.trim();
+    });
+    
+    for (var ingredient in ingredientUsage) {
+        if (ingredientUsage.hasOwnProperty(ingredient)) {
+            var usage = ingredientUsage[ingredient];
+            if (usage.used < usage.required) {
+                // Check if recipe contains this ingredient
+                for (var j = 0; j < recipeIngredients.length; j++) {
+                    if (recipeIngredients[j].indexOf(ingredient) !== -1 || ingredient.indexOf(recipeIngredients[j]) !== -1) {
+                        usage.used++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 function selectMealWithIngredientPriority(availableRecipes, ingredientUsage, usedRecipeIds, mealType) {
@@ -1208,18 +1376,36 @@ function selectMealWithIngredientPriority(availableRecipes, ingredientUsage, use
     }
 }
 
-function displayUnusedIngredientsWarning(unusedIngredients) {
+function displayUnusedIngredientsWarning(unusedIngredients, unusedMeals) {
+    // Only show warning if there are unused items
+    if ((!unusedIngredients || unusedIngredients.length === 0) && (!unusedMeals || unusedMeals.length === 0)) {
+        return;
+    }
+    
     var warningDiv = document.createElement('div');
     warningDiv.className = 'ingredient-warning';
     warningDiv.id = 'ingredientWarning';
     
-    var html = '<h4><i class="fas fa-exclamation-triangle"></i> Some ingredients could not be fully used:</h4>';
-    html += '<ul>';
-    for (var i = 0; i < unusedIngredients.length; i++) {
-        var item = unusedIngredients[i];
-        html += '<li><strong>' + item.ingredient + '</strong>: ' + item.remaining + ' remaining (not enough recipes found)</li>';
+    var html = '<h4><i class="fas fa-exclamation-triangle"></i> Warning:</h4>';
+    
+    if (unusedIngredients && unusedIngredients.length > 0) {
+        html += '<p style="margin-bottom: 10px;"><strong>Some ingredients could not be fully used:</strong></p>';
+        html += '<ul style="margin-bottom: 15px;">';
+        for (var i = 0; i < unusedIngredients.length; i++) {
+            var item = unusedIngredients[i];
+            html += '<li><strong>' + item.ingredient + '</strong>: ' + item.remaining + ' remaining (not enough recipes found)</li>';
+        }
+        html += '</ul>';
     }
-    html += '</ul>';
+    
+    if (unusedMeals && unusedMeals.length > 0) {
+        html += '<p style="margin-bottom: 10px;"><strong>Some required meals could not be placed:</strong></p>';
+        html += '<ul>';
+        for (var i = 0; i < unusedMeals.length; i++) {
+            html += '<li><strong>' + unusedMeals[i] + '</strong> (not suitable for any remaining time slot)</li>';
+        }
+        html += '</ul>';
+    }
     
     warningDiv.innerHTML = html;
     
