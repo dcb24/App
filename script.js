@@ -210,8 +210,6 @@ function displayRecipes() {
         html += '<div class="recipe-meta">';
         html += '<span>' + recipe.category + '</span>';
         html += '<span>' + recipe.cuisine + '</span>';
-        html += '<span>' + recipe.difficulty + '</span>';
-        html += '<span class="rating">★ ' + recipe.rating + '</span>';
         html += '</div>';
         html += '</div>';
     }
