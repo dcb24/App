@@ -105,6 +105,36 @@ def generate_instructions(ingredients, cooking_method):
     
     return " ".join(steps)
 
+def generate_full_meal_status(category):
+    """Determine if recipe is a full meal or half meal"""
+    full_meal_categories = ['Main Course', 'Dinner', 'Lunch', 'Breakfast']
+    half_meal_categories = ['Appetizer', 'Salad', 'Soup', 'Snack', 'Beverage']
+    
+    if category in full_meal_categories:
+        return random.choice([True, True, True, False])  # 75% chance of being full meal
+    elif category in half_meal_categories:
+        return random.choice([True, False, False, False])  # 25% chance of being full meal
+    else:  # Dessert
+        return random.choice([True, False])  # 50% chance
+
+def generate_meal_time_status(category, meal_time):
+    """Determine if recipe is suitable for lunch or dinner"""
+    if meal_time == 'lunch':
+        lunch_categories = ['Lunch', 'Main Course', 'Salad', 'Soup', 'Appetizer']
+        return category in lunch_categories or random.choice([True, False])
+    else:  # dinner
+        dinner_categories = ['Dinner', 'Main Course', 'Soup', 'Appetizer']
+        return category in dinner_categories or random.choice([True, False])
+
+def generate_sweet_status(category):
+    """Determine if recipe is sweet/dessert"""
+    if category == 'Dessert':
+        return True
+    elif category in ['Appetizer', 'Salad', 'Soup']:
+        return False
+    else:
+        return random.choice([True, False, False, False])  # 25% chance of being sweet
+
 def generate_recipe_data(num_recipes=100):
     """Generate fake recipe dataset"""
     recipes = []
@@ -136,7 +166,11 @@ def generate_recipe_data(num_recipes=100):
             'is_vegetarian': random.choice([True, False]),
             'is_vegan': random.choice([True, False]),
             'is_gluten_free': random.choice([True, False]),
-            'is_dairy_free': random.choice([True, False])
+            'is_dairy_free': random.choice([True, False]),
+            'is_full_meal': generate_full_meal_status(category),
+            'is_lunch': generate_meal_time_status(category, 'lunch'),
+            'is_dinner': generate_meal_time_status(category, 'dinner'),
+            'is_sweet': generate_sweet_status(category)
         }
         
         # Calculate total time

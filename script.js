@@ -1,6 +1,8 @@
 // Global variables
 let recipes = [];
 let filteredRecipes = [];
+let mealPlan = {};
+let selectedRecipe = null;
 
 // DOM elements
 const navButtons = document.querySelectorAll('.nav-btn');
@@ -13,6 +15,10 @@ const cuisineFilter = document.getElementById('cuisineFilter');
 const recipeForm = document.getElementById('recipeForm');
 const generateRandomBtn = document.getElementById('generateRandom');
 const randomRecipeDisplay = document.getElementById('randomRecipeDisplay');
+const generateMealPlanBtn = document.getElementById('generateMealPlan');
+const clearMealPlanBtn = document.getElementById('clearMealPlan');
+const mealPlanDisplay = document.getElementById('mealPlanDisplay');
+const ingredientList = document.getElementById('ingredientList');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
@@ -44,6 +50,10 @@ function setupEventListeners() {
 
     // Random recipe generation
     generateRandomBtn.addEventListener('click', generateRandomRecipe);
+
+    // Meal planning
+    generateMealPlanBtn.addEventListener('click', generateMealPlan);
+    clearMealPlanBtn.addEventListener('click', clearMealPlan);
 }
 
 function switchSection(sectionId) {
@@ -191,7 +201,7 @@ function displayRecipes() {
     }
 
     recipesList.innerHTML = filteredRecipes.map(recipe => `
-        <div class="recipe-card">
+        <div class="recipe-card" onclick="showRecipeDetails('${recipe.recipe_id}')">
             <h3>${recipe.name}</h3>
             <div class="recipe-meta">
                 <span>${recipe.category}</span>
@@ -353,6 +363,244 @@ function generateRandomRecipe() {
                 ${recipe.is_gluten_free === 'True' ? '<span style="background: #17a2b8; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Gluten Free</span>' : ''}
                 ${recipe.is_dairy_free === 'True' ? '<span style="background: #ffc107; color: #333; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Dairy Free</span>' : ''}
             </div>
+        </div>
+    `;
+}
+
+// Recipe Details Functions
+function showRecipeDetails(recipeId) {
+    const recipe = recipes.find(r => r.recipe_id === recipeId);
+    if (!recipe) return;
+
+    selectedRecipe = recipe;
+    
+    // Create modal or detailed view
+    const modal = document.createElement('div');
+    modal.className = 'recipe-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>${recipe.name}</h2>
+                <button class="close-btn" onclick="closeRecipeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="recipe-details-grid">
+                    <div class="detail-section">
+                        <h3>Basic Information</h3>
+                        <p><strong>Category:</strong> ${recipe.category}</p>
+                        <p><strong>Cuisine:</strong> ${recipe.cuisine}</p>
+                        <p><strong>Difficulty:</strong> ${recipe.difficulty}</p>
+                        <p><strong>Cooking Method:</strong> ${recipe.cooking_method}</p>
+                        <p><strong>Rating:</strong> ★ ${recipe.rating}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Timing & Nutrition</h3>
+                        <p><strong>Prep Time:</strong> ${recipe.prep_time_minutes} minutes</p>
+                        <p><strong>Cook Time:</strong> ${recipe.cook_time_minutes} minutes</p>
+                        <p><strong>Total Time:</strong> ${recipe.total_time_minutes} minutes</p>
+                        <p><strong>Servings:</strong> ${recipe.servings}</p>
+                        <p><strong>Calories per Serving:</strong> ${recipe.calories_per_serving}</p>
+                    </div>
+                    <div class="detail-section">
+                        <h3>Dietary Information</h3>
+                        <div class="dietary-tags">
+                            ${recipe.is_vegetarian === 'True' ? '<span class="dietary-tag vegetarian">Vegetarian</span>' : ''}
+                            ${recipe.is_vegan === 'True' ? '<span class="dietary-tag vegan">Vegan</span>' : ''}
+                            ${recipe.is_gluten_free === 'True' ? '<span class="dietary-tag gluten-free">Gluten Free</span>' : ''}
+                            ${recipe.is_dairy_free === 'True' ? '<span class="dietary-tag dairy-free">Dairy Free</span>' : ''}
+                            ${recipe.is_full_meal === 'True' ? '<span class="dietary-tag full-meal">Full Meal</span>' : '<span class="dietary-tag half-meal">Half Meal</span>'}
+                            ${recipe.is_lunch === 'True' ? '<span class="dietary-tag lunch">Lunch</span>' : ''}
+                            ${recipe.is_dinner === 'True' ? '<span class="dietary-tag dinner">Dinner</span>' : ''}
+                            ${recipe.is_sweet === 'True' ? '<span class="dietary-tag sweet">Sweet</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="ingredients-section">
+                    <h3>Ingredients</h3>
+                    <div class="ingredients-list">${recipe.ingredients}</div>
+                </div>
+                <div class="instructions-section">
+                    <h3>Instructions</h3>
+                    <div class="instructions-text">${recipe.instructions}</div>
+                </div>
+                <div class="recipe-meta-info">
+                    <p><strong>Author:</strong> ${recipe.author}</p>
+                    <p><strong>Date Created:</strong> ${recipe.date_created}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function closeRecipeModal() {
+    const modal = document.querySelector('.recipe-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Meal Planning Functions
+function generateMealPlan() {
+    if (recipes.length === 0) {
+        alert('No recipes available. Please add some recipes first.');
+        return;
+    }
+
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    mealPlan = {};
+
+    days.forEach(day => {
+        mealPlan[day] = {
+            lunch: generateMealForTime('lunch'),
+            dinner: generateMealForTime('dinner')
+        };
+    });
+
+    displayMealPlan();
+    generateIngredientList();
+}
+
+function generateMealForTime(mealTime) {
+    const suitableRecipes = recipes.filter(recipe => {
+        if (mealTime === 'lunch') {
+            return recipe.is_lunch === 'True';
+        } else {
+            return recipe.is_dinner === 'True';
+        }
+    });
+
+    if (suitableRecipes.length === 0) {
+        return null;
+    }
+
+    const randomRecipe = suitableRecipes[Math.floor(Math.random() * suitableRecipes.length)];
+    
+    if (randomRecipe.is_full_meal === 'True') {
+        return [randomRecipe];
+    } else {
+        // For half meals, we need two recipes
+        const secondRecipe = suitableRecipes.find(r => 
+            r.recipe_id !== randomRecipe.recipe_id && r.is_full_meal === 'False'
+        );
+        return secondRecipe ? [randomRecipe, secondRecipe] : [randomRecipe];
+    }
+}
+
+function displayMealPlan() {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    
+    mealPlanDisplay.innerHTML = `
+        <div class="week-grid">
+            ${days.map(day => `
+                <div class="day-card">
+                    <div class="day-header">${day}</div>
+                    <div class="meal-slot lunch">
+                        <h4>Lunch</h4>
+                        ${mealPlan[day].lunch ? mealPlan[day].lunch.map(recipe => `
+                            <div class="meal-item">
+                                <div>
+                                    <div class="meal-item-name">${recipe.name}</div>
+                                    <div class="meal-item-type">${recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal'}</div>
+                                </div>
+                                <button class="replace-btn" onclick="replaceMeal('${day}', 'lunch', '${recipe.recipe_id}')">Replace</button>
+                            </div>
+                        `).join('') : '<div class="meal-item"><div class="meal-item-name">No lunch planned</div></div>'}
+                    </div>
+                    <div class="meal-slot dinner">
+                        <h4>Dinner</h4>
+                        ${mealPlan[day].dinner ? mealPlan[day].dinner.map(recipe => `
+                            <div class="meal-item">
+                                <div>
+                                    <div class="meal-item-name">${recipe.name}</div>
+                                    <div class="meal-item-type">${recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal'}</div>
+                                </div>
+                                <button class="replace-btn" onclick="replaceMeal('${day}', 'dinner', '${recipe.recipe_id}')">Replace</button>
+                            </div>
+                        `).join('') : '<div class="meal-item"><div class="meal-item-name">No dinner planned</div></div>'}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function replaceMeal(day, mealTime, currentRecipeId) {
+    const suitableRecipes = recipes.filter(recipe => {
+        if (mealTime === 'lunch') {
+            return recipe.is_lunch === 'True' && recipe.recipe_id !== currentRecipeId;
+        } else {
+            return recipe.is_dinner === 'True' && recipe.recipe_id !== currentRecipeId;
+        }
+    });
+
+    if (suitableRecipes.length === 0) {
+        alert('No alternative recipes available.');
+        return;
+    }
+
+    const randomRecipe = suitableRecipes[Math.floor(Math.random() * suitableRecipes.length)];
+    
+    if (randomRecipe.is_full_meal === 'True') {
+        mealPlan[day][mealTime] = [randomRecipe];
+    } else {
+        // For half meals, try to find a second recipe
+        const secondRecipe = suitableRecipes.find(r => 
+            r.recipe_id !== randomRecipe.recipe_id && r.is_full_meal === 'False'
+        );
+        mealPlan[day][mealTime] = secondRecipe ? [randomRecipe, secondRecipe] : [randomRecipe];
+    }
+
+    displayMealPlan();
+    generateIngredientList();
+}
+
+function clearMealPlan() {
+    mealPlan = {};
+    mealPlanDisplay.innerHTML = '<div class="text-center">No meal plan generated yet. Click "Generate Weekly Plan" to create one.</div>';
+    ingredientList.innerHTML = '';
+}
+
+function generateIngredientList() {
+    const ingredientCounts = {};
+    const allRecipes = [];
+
+    Object.keys(mealPlan).forEach(day => {
+        ['lunch', 'dinner'].forEach(mealTime => {
+            if (mealPlan[day][mealTime]) {
+                mealPlan[day][mealTime].forEach(recipe => {
+                    allRecipes.push({...recipe, day, mealTime});
+                    const ingredients = recipe.ingredients.split(',').map(ing => ing.trim());
+                    ingredients.forEach(ingredient => {
+                        ingredientCounts[ingredient] = (ingredientCounts[ingredient] || 0) + 1;
+                    });
+                });
+            }
+        });
+    });
+
+    const sortedIngredients = Object.entries(ingredientCounts)
+        .sort(([,a], [,b]) => b - a);
+
+    ingredientList.innerHTML = `
+        <h3>Shopping List</h3>
+        <div class="ingredient-grid">
+            ${sortedIngredients.map(([ingredient, count]) => `
+                <div class="ingredient-item">
+                    <span class="ingredient-name">${ingredient}</span>
+                    <span class="ingredient-count">${count}</span>
+                </div>
+            `).join('')}
+        </div>
+        <div class="recipe-list">
+            <h4>Recipes in this plan:</h4>
+            ${allRecipes.map(recipe => `
+                <div class="recipe-item">
+                    <span class="recipe-item-name">${recipe.name}</span>
+                    <span class="recipe-item-day">${recipe.day} ${recipe.mealTime}</span>
+                </div>
+            `).join('')}
         </div>
     `;
 }
