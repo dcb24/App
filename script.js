@@ -597,20 +597,22 @@ function showMealReplacement(day, mealTime) {
     html += '<button class="random-option-btn" id="randomMealBtn">';
     html += '<i class="fas fa-random"></i> Random Recipe';
     html += '</button>';
-    html += '<h3>Or search and choose:</h3>';
-    html += '<div class="search-container">';
-    html += '<input type="text" id="recipeSearchInput" placeholder="Type to search recipes..." onkeyup="filterRecipeOptions()">';
-    html += '</div>';
-    html += '<div class="recipe-options-list" id="recipeOptionsList">';
+    html += '<h3 style="margin-top: 20px; margin-bottom: 15px;">Or choose from dropdown:</h3>';
+    html += '<div class="meal-replacement-dropdown-container">';
+    html += '<select class="meal-replacement-select" id="mealReplacementSelect">';
+    html += '<option value="">Choose a recipe...</option>';
     
     for (var i = 0; i < suitableRecipes.length; i++) {
         var recipe = suitableRecipes[i];
-        html += '<div class="recipe-option" data-recipe-id="' + recipe.recipe_id + '" data-name="' + recipe.name.toLowerCase() + '">';
-        html += '<div class="recipe-option-name">' + recipe.name + '</div>';
-        html += '</div>';
+        html += '<option value="' + recipe.recipe_id + '">' + recipe.name + '</option>';
     }
     
-    html += '</div></div></div>';
+    html += '</select>';
+    html += '<button class="confirm-replacement-btn" id="confirmReplacementBtn">';
+    html += '<i class="fas fa-check"></i> Confirm';
+    html += '</button>';
+    html += '</div>';
+    html += '</div></div>';
     modalContent.innerHTML = html;
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
@@ -629,45 +631,27 @@ function showMealReplacement(day, mealTime) {
         });
     }
     
-    var recipeOptions = document.querySelectorAll('.recipe-option');
-    for (var i = 0; i < recipeOptions.length; i++) {
-        recipeOptions[i].addEventListener('click', function(e) {
+    var confirmBtn = document.getElementById('confirmReplacementBtn');
+    var selectElement = document.getElementById('mealReplacementSelect');
+    
+    if (confirmBtn && selectElement) {
+        confirmBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var recipeId = this.getAttribute('data-recipe-id');
-            selectMealRecipe(day, mealTime, recipeId);
+            var recipeId = selectElement.value;
+            if (recipeId) {
+                selectMealRecipe(day, mealTime, recipeId);
+            } else {
+                alert('Please select a recipe first.');
+            }
         });
     }
-    
-    // Focus on search input
-    setTimeout(function() {
-        var searchInput = document.getElementById('recipeSearchInput');
-        if (searchInput) {
-            searchInput.focus();
-        }
-    }, 100);
 }
 
 function closeMealReplacement() {
     var modal = document.querySelector('.meal-replacement-modal');
     if (modal) {
         modal.remove();
-    }
-}
-
-function filterRecipeOptions() {
-    var searchTerm = document.getElementById('recipeSearchInput').value.toLowerCase();
-    var options = document.querySelectorAll('.recipe-option');
-    
-    for (var i = 0; i < options.length; i++) {
-        var option = options[i];
-        var recipeName = option.getAttribute('data-name');
-        
-        if (recipeName.indexOf(searchTerm) !== -1) {
-            option.style.display = 'block';
-        } else {
-            option.style.display = 'none';
-        }
     }
 }
 

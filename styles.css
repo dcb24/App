@@ -10,7 +10,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
-    background: linear-gradient(135deg, #e8730d 0%, #f5461a 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #e8730d 100%);
     min-height: 100vh;
 }
 
@@ -471,6 +471,51 @@ header p {
     text-align: center;
 }
 
+.meal-replacement-dropdown-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.meal-replacement-select {
+    flex: 1;
+    padding: 12px 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    background: white;
+    cursor: pointer;
+}
+
+.meal-replacement-select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.confirm-replacement-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.confirm-replacement-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
 .search-container {
     margin: 20px 0;
 }
@@ -513,45 +558,6 @@ header p {
     -webkit-transform: translateY(-3px);
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-}
-
-.recipe-options-list {
-    max-height: 400px;
-    overflow-y: auto;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    background: white;
-}
-
-.recipe-option {
-    padding: 15px;
-    border-bottom: 1px solid #e9ecef;
-    cursor: pointer;
-    -webkit-transition: all 0.3s ease;
-    transition: all 0.3s ease;
-}
-
-.recipe-option:hover {
-    background: #f8f9fa;
-}
-
-.recipe-option:last-child {
-    border-bottom: none;
-}
-
-.recipe-option-name {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 8px;
-    font-size: 1.1rem;
-}
-
-.recipe-option-tags {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-wrap: wrap;
-    flex-wrap: wrap;
-    gap: 8px;
 }
 
 .plan-controls {
@@ -1023,6 +1029,16 @@ header p {
     .generate-plan-btn,
     .generate-plan-btn-ingredients,
     .clear-plan-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .meal-replacement-dropdown-container {
+        flex-direction: column;
+    }
+    
+    .meal-replacement-select,
+    .confirm-replacement-btn {
         width: 100%;
         justify-content: center;
     }
