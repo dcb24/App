@@ -580,11 +580,6 @@ function showMealReplacement(day, mealTime) {
     var modal = document.createElement('div');
     modal.className = 'meal-replacement-modal';
     
-    // Create overlay that closes on click
-    var overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    modal.appendChild(overlay);
-    
     var modalContent = document.createElement('div');
     modalContent.className = 'modal-content';
     
@@ -617,10 +612,17 @@ function showMealReplacement(day, mealTime) {
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
     
-    // Add event listeners after appending to DOM
-    overlay.addEventListener('click', function() {
+    // Add overlay behind content that closes on tap/click (iOS Safari friendly)
+    var overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    modal.insertBefore(overlay, modalContent);
+    
+    var overlayClose = function(e) {
+        e.stopPropagation();
         closeMealReplacement();
-    });
+    };
+    overlay.addEventListener('click', overlayClose);
+    overlay.addEventListener('touchstart', overlayClose, { passive: true });
     
     var randomBtn = document.getElementById('randomMealBtn');
     if (randomBtn) {

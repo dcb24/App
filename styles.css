@@ -466,6 +466,7 @@ header p {
     height: 100%;
     cursor: pointer;
     z-index: 0;
+    background: transparent; /* ensure it doesn't block events visually */
 }
 
 .replacement-options {
