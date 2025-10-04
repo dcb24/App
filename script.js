@@ -522,22 +522,13 @@ function showMealReplacement(day, mealTime) {
     var modal = document.createElement('div');
     modal.className = 'meal-replacement-modal';
     
+    // Create overlay that closes on click
     var overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
-    overlay.onclick = function(e) {
-        if (e.target === overlay) {
-            closeMealReplacement();
-        }
-    };
     modal.appendChild(overlay);
     
     var modalContent = document.createElement('div');
     modalContent.className = 'modal-content';
-    
-    // Stop propagation on modal content clicks
-    modalContent.onclick = function(e) {
-        e.stopPropagation();
-    };
     
     var html = '<div class="modal-header">';
     html += '<h2>Choose ' + mealTime + ' for ' + day + '</h2>';
@@ -545,7 +536,7 @@ function showMealReplacement(day, mealTime) {
     html += '</div>';
     html += '<div class="modal-body">';
     html += '<div class="replacement-options">';
-    html += '<button class="random-option-btn" onclick="selectRandomMeal(\'' + day + '\', \'' + mealTime + '\')">';
+    html += '<button class="random-option-btn" id="randomMealBtn">';
     html += '<i class="fas fa-random"></i> Random Recipe';
     html += '</button>';
     html += '<h3>Or search and choose:</h3>';
@@ -556,7 +547,7 @@ function showMealReplacement(day, mealTime) {
     
     for (var i = 0; i < suitableRecipes.length; i++) {
         var recipe = suitableRecipes[i];
-        html += '<div class="recipe-option" data-name="' + recipe.name.toLowerCase() + '" onclick="selectMealRecipe(\'' + day + '\', \'' + mealTime + '\', \'' + recipe.recipe_id + '\')">';
+        html += '<div class="recipe-option" data-recipe-id="' + recipe.recipe_id + '" data-name="' + recipe.name.toLowerCase() + '">';
         html += '<div class="recipe-option-name">' + recipe.name + '</div>';
         html += '</div>';
     }
@@ -565,6 +556,30 @@ function showMealReplacement(day, mealTime) {
     modalContent.innerHTML = html;
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
+    
+    // Add event listeners after appending to DOM
+    overlay.addEventListener('click', function() {
+        closeMealReplacement();
+    });
+    
+    var randomBtn = document.getElementById('randomMealBtn');
+    if (randomBtn) {
+        randomBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            selectRandomMeal(day, mealTime);
+        });
+    }
+    
+    var recipeOptions = document.querySelectorAll('.recipe-option');
+    for (var i = 0; i < recipeOptions.length; i++) {
+        recipeOptions[i].addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var recipeId = this.getAttribute('data-recipe-id');
+            selectMealRecipe(day, mealTime, recipeId);
+        });
+    }
     
     // Focus on search input
     setTimeout(function() {

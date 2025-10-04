@@ -43,16 +43,15 @@ header p {
     display: -webkit-box;
     display: -webkit-flex;
     display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+    flex-direction: row;
     -webkit-box-pack: center;
     -webkit-justify-content: center;
     justify-content: center;
-    gap: 8px;
     margin-bottom: 30px;
-    -webkit-box-lines: single;
-    -webkit-flex-wrap: nowrap;
-    flex-wrap: nowrap;
     width: 100%;
-    max-width: 100%;
     padding: 0 10px;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -81,10 +80,12 @@ header p {
     backdrop-filter: blur(10px);
     width: 48px;
     min-width: 48px;
+    max-width: 48px;
     height: 48px;
     -webkit-box-flex: 0;
-    -webkit-flex: 0 0 48px;
-    flex: 0 0 48px;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+    margin: 0 4px;
 }
 
 .nav-btn:hover {
