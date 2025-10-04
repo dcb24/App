@@ -56,6 +56,12 @@ function setupEventListeners() {
     // Meal planning
     generateMealPlanBtn.addEventListener('click', generateMealPlan);
     clearMealPlanBtn.addEventListener('click', clearMealPlan);
+    
+    // Download CSV
+    var downloadCSVBtn = document.getElementById('downloadCSV');
+    if (downloadCSVBtn) {
+        downloadCSVBtn.addEventListener('click', downloadRecipesCSV);
+    }
 }
 
 function switchSection(sectionId) {
@@ -77,15 +83,30 @@ function switchSection(sectionId) {
 
 async function loadRecipes() {
     try {
-        // Try to load from CSV file
-        const response = await fetch('recipe_dataset.csv');
+        // First, load from CSV file
+        var response = await fetch('recipe_dataset.csv');
         if (!response.ok) {
             throw new Error('CSV file not found');
         }
         
-        const csvText = await response.text();
+        var csvText = await response.text();
         recipes = parseCSV(csvText);
-        filteredRecipes = [...recipes];
+        
+        // Then, load any user-added recipes from localStorage
+        var storedRecipes = localStorage.getItem('userRecipes');
+        if (storedRecipes) {
+            try {
+                var userRecipes = JSON.parse(storedRecipes);
+                // Merge user recipes with CSV recipes
+                for (var i = 0; i < userRecipes.length; i++) {
+                    recipes.push(userRecipes[i]);
+                }
+            } catch (e) {
+                console.error('Error parsing stored recipes:', e);
+            }
+        }
+        
+        filteredRecipes = recipes.slice(); // Safari-compatible array copy
         
         showLoading(false);
         displayRecipes();
@@ -93,7 +114,7 @@ async function loadRecipes() {
         console.error('Error loading recipes:', error);
         // Fallback: create some sample recipes
         recipes = createSampleRecipes();
-        filteredRecipes = [...recipes];
+        filteredRecipes = recipes.slice();
         showLoading(false);
         displayRecipes();
     }
@@ -243,7 +264,7 @@ function handleFormSubmit(e) {
     
     // Get form data
     var newRecipe = {
-        recipe_id: (recipes.length + 1).toString(),
+        recipe_id: 'user_' + Date.now().toString(),
         name: document.getElementById('recipeName').value,
         category: document.getElementById('recipeCategory').value,
         cuisine: document.getElementById('recipeCuisine').value,
@@ -259,28 +280,49 @@ function handleFormSubmit(e) {
         instructions: document.getElementById('recipeInstructions').value,
         author: document.getElementById('recipeAuthor').value,
         date_created: new Date().toISOString().split('T')[0],
-        is_vegetarian: document.getElementById('recipeVegetarian').checked.toString(),
-        is_vegan: document.getElementById('recipeVegan').checked.toString(),
-        is_gluten_free: document.getElementById('recipeGlutenFree').checked.toString(),
-        is_dairy_free: document.getElementById('recipeDairyFree').checked.toString(),
-        is_full_meal: 'True', // Default to full meal for user-added recipes
-        is_lunch: 'True', // Default to suitable for lunch
-        is_dinner: 'True', // Default to suitable for dinner
-        is_sweet: 'False' // Default to not sweet
+        is_vegetarian: document.getElementById('recipeVegetarian').checked ? 'True' : 'False',
+        is_vegan: document.getElementById('recipeVegan').checked ? 'True' : 'False',
+        is_gluten_free: document.getElementById('recipeGlutenFree').checked ? 'True' : 'False',
+        is_dairy_free: document.getElementById('recipeDairyFree').checked ? 'True' : 'False',
+        is_full_meal: 'True',
+        is_lunch: 'True',
+        is_dinner: 'True',
+        is_sweet: 'False'
     };
 
     // Add to recipes array
     recipes.push(newRecipe);
-    filteredRecipes = recipes.slice(); // Safari-compatible array copy
+    filteredRecipes = recipes.slice();
+
+    // Save user recipes to localStorage
+    saveUserRecipes();
 
     // Reset form
     recipeForm.reset();
 
     // Show success message
-    alert('Recipe added successfully!');
+    alert('Recipe added successfully and saved!');
 
     // Switch to recipes view
     switchSection('recipes');
+}
+
+function saveUserRecipes() {
+    // Get all user-added recipes (those with recipe_id starting with 'user_')
+    var userRecipes = [];
+    for (var i = 0; i < recipes.length; i++) {
+        if (recipes[i].recipe_id.indexOf('user_') === 0) {
+            userRecipes.push(recipes[i]);
+        }
+    }
+    
+    // Save to localStorage
+    try {
+        localStorage.setItem('userRecipes', JSON.stringify(userRecipes));
+    } catch (e) {
+        console.error('Error saving recipes to localStorage:', e);
+        alert('Warning: Could not save recipe to browser storage. Your recipe will be lost on page refresh.');
+    }
 }
 
 function generateRandomRecipe() {
@@ -757,4 +799,59 @@ function generateIngredientList() {
     html += '</div>';
     
     ingredientList.innerHTML = html;
+}
+
+function downloadRecipesCSV() {
+    if (recipes.length === 0) {
+        alert('No recipes to export!');
+        return;
+    }
+    
+    // Define CSV headers based on recipe structure
+    var headers = [
+        'recipe_id', 'name', 'category', 'cuisine', 'cooking_method', 'difficulty',
+        'prep_time_minutes', 'cook_time_minutes', 'total_time_minutes', 'servings',
+        'calories_per_serving', 'rating', 'ingredients', 'instructions', 'author',
+        'date_created', 'is_vegetarian', 'is_vegan', 'is_gluten_free', 'is_dairy_free',
+        'is_full_meal', 'is_lunch', 'is_dinner', 'is_sweet'
+    ];
+    
+    // Create CSV content
+    var csvContent = headers.join(',') + '\n';
+    
+    for (var i = 0; i < recipes.length; i++) {
+        var recipe = recipes[i];
+        var row = [];
+        
+        for (var j = 0; j < headers.length; j++) {
+            var header = headers[j];
+            var value = recipe[header] || '';
+            
+            // Escape quotes and wrap in quotes if contains comma, quote, or newline
+            if (value.toString().indexOf(',') !== -1 || 
+                value.toString().indexOf('"') !== -1 || 
+                value.toString().indexOf('\n') !== -1) {
+                value = '"' + value.toString().replace(/"/g, '""') + '"';
+            }
+            
+            row.push(value);
+        }
+        
+        csvContent += row.join(',') + '\n';
+    }
+    
+    // Create download link
+    var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
+    var url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'recipes_' + new Date().toISOString().split('T')[0] + '.csv');
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    alert('Recipes exported successfully!');
 }

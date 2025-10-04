@@ -123,6 +123,7 @@ header p {
 .section-header {
     margin-bottom: 30px;
     text-align: center;
+    position: relative;
 }
 
 .section-header h2 {
@@ -134,6 +135,32 @@ header p {
 .section-header p {
     color: #666;
     font-size: 1.1rem;
+}
+
+.download-csv-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    -webkit-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.download-csv-btn:hover {
+    background: #218838;
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
 }
 
 /* Search Controls */
