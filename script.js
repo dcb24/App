@@ -57,6 +57,12 @@ function setupEventListeners() {
     generateMealPlanBtn.addEventListener('click', generateMealPlan);
     clearMealPlanBtn.addEventListener('click', clearMealPlan);
     
+    // Meal planning with ingredients
+    var generateMealPlanWithIngredientsBtn = document.getElementById('generateMealPlanWithIngredients');
+    if (generateMealPlanWithIngredientsBtn) {
+        generateMealPlanWithIngredientsBtn.addEventListener('click', showIngredientInputModal);
+    }
+    
     // Download CSV
     var downloadCSVBtn = document.getElementById('downloadCSV');
     if (downloadCSVBtn) {
@@ -460,6 +466,12 @@ function generateMealPlan() {
 
     displayMealPlan();
     generateIngredientList();
+    
+    // Remove ingredient warning if present
+    var existingWarning = document.getElementById('ingredientWarning');
+    if (existingWarning) {
+        existingWarning.remove();
+    }
 }
 
 function generateMealForTime(mealTime) {
@@ -736,6 +748,12 @@ function clearMealPlan() {
     mealPlan = {};
     mealPlanDisplay.innerHTML = '<div class="text-center">No meal plan generated yet. Click "Generate Weekly Plan" to create one.</div>';
     ingredientList.innerHTML = '';
+    
+    // Remove ingredient warning if present
+    var existingWarning = document.getElementById('ingredientWarning');
+    if (existingWarning) {
+        existingWarning.remove();
+    }
 }
 
 function generateIngredientList() {
@@ -854,4 +872,297 @@ function downloadRecipesCSV() {
     document.body.removeChild(link);
     
     alert('Recipes exported successfully!');
+}
+
+// Ingredient-based meal planning functions
+function showIngredientInputModal() {
+    var modal = document.createElement('div');
+    modal.className = 'ingredient-input-modal';
+    modal.id = 'ingredientInputModal';
+    
+    var html = '<div class="modal-content">';
+    html += '<div class="modal-header">';
+    html += '<h2>Generate Meal Plan Using Ingredients</h2>';
+    html += '<button class="close-btn" onclick="closeIngredientInputModal()">&times;</button>';
+    html += '</div>';
+    html += '<div class="modal-body">';
+    html += '<p style="margin-bottom: 20px; color: #666;">Specify which ingredients should appear in your weekly meal plan and how many times:</p>';
+    html += '<div class="ingredient-input-container" id="ingredientInputContainer">';
+    html += '<div class="ingredient-input-row">';
+    html += '<input type="text" class="ingredient-input-field" placeholder="Enter ingredient (e.g., carrot)" />';
+    html += '<input type="number" class="ingredient-count-field" placeholder="Times" min="1" max="14" value="1" />';
+    html += '<button class="add-ingredient-btn" onclick="addIngredientRow()"><i class="fas fa-plus"></i></button>';
+    html += '</div>';
+    html += '</div>';
+    html += '<button class="generate-ingredients-plan-btn" onclick="generateMealPlanWithIngredients()">';
+    html += '<i class="fas fa-magic"></i> Generate Plan';
+    html += '</button>';
+    html += '</div></div>';
+    
+    modal.innerHTML = html;
+    document.body.appendChild(modal);
+}
+
+function closeIngredientInputModal() {
+    var modal = document.getElementById('ingredientInputModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+function addIngredientRow() {
+    var container = document.getElementById('ingredientInputContainer');
+    var newRow = document.createElement('div');
+    newRow.className = 'ingredient-input-row';
+    
+    var html = '<input type="text" class="ingredient-input-field" placeholder="Enter ingredient (e.g., tomatoes)" />';
+    html += '<input type="number" class="ingredient-count-field" placeholder="Times" min="1" max="14" value="1" />';
+    html += '<button class="remove-ingredient-btn" onclick="removeIngredientRow(this)"><i class="fas fa-minus"></i></button>';
+    
+    newRow.innerHTML = html;
+    container.appendChild(newRow);
+}
+
+function removeIngredientRow(button) {
+    var row = button.parentElement;
+    row.remove();
+}
+
+function generateMealPlanWithIngredients() {
+    if (recipes.length === 0) {
+        alert('No recipes available. Please add some recipes first.');
+        return;
+    }
+    
+    // Collect ingredient requirements
+    var ingredientRequirements = {};
+    var rows = document.querySelectorAll('.ingredient-input-row');
+    
+    for (var i = 0; i < rows.length; i++) {
+        var ingredientInput = rows[i].querySelector('.ingredient-input-field');
+        var countInput = rows[i].querySelector('.ingredient-count-field');
+        
+        var ingredient = ingredientInput.value.trim().toLowerCase();
+        var count = parseInt(countInput.value) || 0;
+        
+        if (ingredient && count > 0) {
+            ingredientRequirements[ingredient] = count;
+        }
+    }
+    
+    if (Object.keys(ingredientRequirements).length === 0) {
+        alert('Please enter at least one ingredient with a count.');
+        return;
+    }
+    
+    // Close the modal
+    closeIngredientInputModal();
+    
+    // Generate meal plan based on ingredients
+    var result = createMealPlanWithIngredients(ingredientRequirements);
+    
+    // Display the meal plan
+    mealPlan = result.mealPlan;
+    displayMealPlan();
+    generateIngredientList();
+    
+    // Show warning if some ingredients weren't fully used
+    if (result.unusedIngredients.length > 0) {
+        displayUnusedIngredientsWarning(result.unusedIngredients);
+    }
+}
+
+function createMealPlanWithIngredients(ingredientRequirements) {
+    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var newMealPlan = {};
+    var usedRecipeIds = [];
+    var ingredientUsage = {};
+    
+    // Initialize ingredient usage tracking
+    for (var ingredient in ingredientRequirements) {
+        if (ingredientRequirements.hasOwnProperty(ingredient)) {
+            ingredientUsage[ingredient] = {
+                required: ingredientRequirements[ingredient],
+                used: 0
+            };
+        }
+    }
+    
+    // Get all available recipes for lunch and dinner
+    var lunchRecipes = [];
+    var dinnerRecipes = [];
+    
+    for (var i = 0; i < recipes.length; i++) {
+        var recipe = recipes[i];
+        if (recipe.is_lunch === 'True' || recipe.is_lunch === true) {
+            lunchRecipes.push(recipe);
+        }
+        if (recipe.is_dinner === 'True' || recipe.is_dinner === true) {
+            dinnerRecipes.push(recipe);
+        }
+    }
+    
+    // Create meal plan for each day
+    for (var dayIdx = 0; dayIdx < days.length; dayIdx++) {
+        var day = days[dayIdx];
+        newMealPlan[day] = {
+            lunch: selectMealWithIngredientPriority(lunchRecipes, ingredientUsage, usedRecipeIds, 'lunch'),
+            dinner: selectMealWithIngredientPriority(dinnerRecipes, ingredientUsage, usedRecipeIds, 'dinner')
+        };
+    }
+    
+    // Check for unused ingredients
+    var unusedIngredients = [];
+    for (var ingredient in ingredientUsage) {
+        if (ingredientUsage.hasOwnProperty(ingredient)) {
+            var usage = ingredientUsage[ingredient];
+            if (usage.used < usage.required) {
+                unusedIngredients.push({
+                    ingredient: ingredient,
+                    remaining: usage.required - usage.used
+                });
+            }
+        }
+    }
+    
+    return {
+        mealPlan: newMealPlan,
+        unusedIngredients: unusedIngredients
+    };
+}
+
+function selectMealWithIngredientPriority(availableRecipes, ingredientUsage, usedRecipeIds, mealType) {
+    if (availableRecipes.length === 0) {
+        return null;
+    }
+    
+    // First, try to find a recipe that contains an ingredient we still need
+    var priorityRecipes = [];
+    
+    for (var i = 0; i < availableRecipes.length; i++) {
+        var recipe = availableRecipes[i];
+        
+        // Skip if already used
+        if (usedRecipeIds.indexOf(recipe.recipe_id) !== -1) {
+            continue;
+        }
+        
+        var recipeIngredients = recipe.ingredients.toLowerCase().split(',').map(function(ing) {
+            return ing.trim();
+        });
+        
+        // Check if this recipe contains any needed ingredients
+        var hasNeededIngredient = false;
+        for (var ingredient in ingredientUsage) {
+            if (ingredientUsage.hasOwnProperty(ingredient)) {
+                var usage = ingredientUsage[ingredient];
+                if (usage.used < usage.required) {
+                    // Check if recipe contains this ingredient
+                    for (var j = 0; j < recipeIngredients.length; j++) {
+                        if (recipeIngredients[j].indexOf(ingredient) !== -1 || ingredient.indexOf(recipeIngredients[j]) !== -1) {
+                            hasNeededIngredient = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasNeededIngredient) break;
+            }
+        }
+        
+        if (hasNeededIngredient) {
+            priorityRecipes.push(recipe);
+        }
+    }
+    
+    // Select from priority recipes first
+    var selectedRecipe = null;
+    if (priorityRecipes.length > 0) {
+        selectedRecipe = priorityRecipes[Math.floor(Math.random() * priorityRecipes.length)];
+    } else {
+        // If no priority recipes, select any unused recipe
+        var unusedRecipes = [];
+        for (var i = 0; i < availableRecipes.length; i++) {
+            if (usedRecipeIds.indexOf(availableRecipes[i].recipe_id) === -1) {
+                unusedRecipes.push(availableRecipes[i]);
+            }
+        }
+        if (unusedRecipes.length > 0) {
+            selectedRecipe = unusedRecipes[Math.floor(Math.random() * unusedRecipes.length)];
+        }
+    }
+    
+    if (!selectedRecipe) {
+        return null;
+    }
+    
+    // Mark recipe as used
+    usedRecipeIds.push(selectedRecipe.recipe_id);
+    
+    // Update ingredient usage
+    var recipeIngredients = selectedRecipe.ingredients.toLowerCase().split(',').map(function(ing) {
+        return ing.trim();
+    });
+    
+    for (var ingredient in ingredientUsage) {
+        if (ingredientUsage.hasOwnProperty(ingredient)) {
+            var usage = ingredientUsage[ingredient];
+            if (usage.used < usage.required) {
+                // Check if recipe contains this ingredient
+                for (var j = 0; j < recipeIngredients.length; j++) {
+                    if (recipeIngredients[j].indexOf(ingredient) !== -1 || ingredient.indexOf(recipeIngredients[j]) !== -1) {
+                        usage.used++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Handle full meal vs half meal
+    if (selectedRecipe.is_full_meal === 'True' || selectedRecipe.is_full_meal === true) {
+        return [selectedRecipe];
+    } else {
+        // For half meals, try to find a second recipe
+        var secondRecipe = null;
+        for (var i = 0; i < availableRecipes.length; i++) {
+            var recipe = availableRecipes[i];
+            if (usedRecipeIds.indexOf(recipe.recipe_id) === -1 && 
+                (recipe.is_full_meal === 'False' || recipe.is_full_meal === false)) {
+                secondRecipe = recipe;
+                usedRecipeIds.push(recipe.recipe_id);
+                break;
+            }
+        }
+        return secondRecipe ? [selectedRecipe, secondRecipe] : [selectedRecipe];
+    }
+}
+
+function displayUnusedIngredientsWarning(unusedIngredients) {
+    var warningDiv = document.createElement('div');
+    warningDiv.className = 'ingredient-warning';
+    warningDiv.id = 'ingredientWarning';
+    
+    var html = '<h4><i class="fas fa-exclamation-triangle"></i> Some ingredients could not be fully used:</h4>';
+    html += '<ul>';
+    for (var i = 0; i < unusedIngredients.length; i++) {
+        var item = unusedIngredients[i];
+        html += '<li><strong>' + item.ingredient + '</strong>: ' + item.remaining + ' remaining (not enough recipes found)</li>';
+    }
+    html += '</ul>';
+    
+    warningDiv.innerHTML = html;
+    
+    // Remove existing warning if present
+    var existingWarning = document.getElementById('ingredientWarning');
+    if (existingWarning) {
+        existingWarning.remove();
+    }
+    
+    // Insert warning after meal plan display
+    var mealPlanDisplay = document.getElementById('mealPlanDisplay');
+    if (mealPlanDisplay && mealPlanDisplay.nextSibling) {
+        mealPlanDisplay.parentNode.insertBefore(warningDiv, mealPlanDisplay.nextSibling);
+    } else if (mealPlanDisplay) {
+        mealPlanDisplay.parentNode.appendChild(warningDiv);
+    }
 }
