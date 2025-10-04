@@ -455,57 +455,45 @@ function generateMealForTime(mealTime) {
 function displayMealPlan() {
     var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
-    var html = '<div class="meal-plan-list">';
+    var html = '<div class="meal-plan-week">';
     for (var i = 0; i < days.length; i++) {
         var day = days[i];
-        html += '<div class="day-section">';
-        html += '<h3 class="day-title">' + day + '</h3>';
+        html += '<div class="day-card">';
+        html += '<div class="day-header">' + day + '</div>';
         
         // Lunch section
-        html += '<div class="meal-section">';
-        html += '<h4 class="meal-title">Lunch</h4>';
+        html += '<div class="meal-slot lunch">';
+        html += '<h4>Lunch</h4>';
         if (mealPlan[day].lunch) {
             for (var j = 0; j < mealPlan[day].lunch.length; j++) {
                 var recipe = mealPlan[day].lunch[j];
-                html += '<div class="meal-recipe-item">';
-                html += '<div class="recipe-info">';
-                html += '<div class="recipe-name">' + recipe.name + '</div>';
-                html += '<div class="recipe-tags">';
-                html += '<span class="tag">' + recipe.category + '</span>';
-                html += '<span class="tag">' + recipe.cuisine + '</span>';
-                html += '<span class="tag">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</span>';
-                html += '</div>';
-                html += '</div>';
+                html += '<div class="meal-item">';
+                html += '<div class="meal-item-name">' + recipe.name + '</div>';
+                html += '<div class="meal-item-type">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</div>';
                 html += '</div>';
             }
-            html += '<button class="replace-meal-btn" onclick="showMealReplacement(\'' + day + '\', \'lunch\')">Replace Lunch</button>';
+            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'lunch\')">Replace</button>';
         } else {
-            html += '<div class="no-meal">No lunch planned</div>';
-            html += '<button class="replace-meal-btn" onclick="showMealReplacement(\'' + day + '\', \'lunch\')">Add Lunch</button>';
+            html += '<div class="meal-item"><div class="meal-item-name">No lunch planned</div></div>';
+            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'lunch\')">Add Lunch</button>';
         }
         html += '</div>';
         
         // Dinner section
-        html += '<div class="meal-section">';
-        html += '<h4 class="meal-title">Dinner</h4>';
+        html += '<div class="meal-slot dinner">';
+        html += '<h4>Dinner</h4>';
         if (mealPlan[day].dinner) {
             for (var j = 0; j < mealPlan[day].dinner.length; j++) {
                 var recipe = mealPlan[day].dinner[j];
-                html += '<div class="meal-recipe-item">';
-                html += '<div class="recipe-info">';
-                html += '<div class="recipe-name">' + recipe.name + '</div>';
-                html += '<div class="recipe-tags">';
-                html += '<span class="tag">' + recipe.category + '</span>';
-                html += '<span class="tag">' + recipe.cuisine + '</span>';
-                html += '<span class="tag">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</span>';
-                html += '</div>';
-                html += '</div>';
+                html += '<div class="meal-item">';
+                html += '<div class="meal-item-name">' + recipe.name + '</div>';
+                html += '<div class="meal-item-type">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</div>';
                 html += '</div>';
             }
-            html += '<button class="replace-meal-btn" onclick="showMealReplacement(\'' + day + '\', \'dinner\')">Replace Dinner</button>';
+            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'dinner\')">Replace</button>';
         } else {
-            html += '<div class="no-meal">No dinner planned</div>';
-            html += '<button class="replace-meal-btn" onclick="showMealReplacement(\'' + day + '\', \'dinner\')">Add Dinner</button>';
+            html += '<div class="meal-item"><div class="meal-item-name">No dinner planned</div></div>';
+            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'dinner\')">Add Dinner</button>';
         }
         html += '</div>';
         
@@ -549,12 +537,15 @@ function showMealReplacement(day, mealTime) {
     html += '<button class="random-option-btn" onclick="selectRandomMeal(\'' + day + '\', \'' + mealTime + '\')">';
     html += '<i class="fas fa-random"></i> Random Recipe';
     html += '</button>';
-    html += '<h3>Or choose from list:</h3>';
-    html += '<div class="recipe-options-list">';
+    html += '<h3>Or search and choose:</h3>';
+    html += '<div class="search-container">';
+    html += '<input type="text" id="recipeSearchInput" placeholder="Type to search recipes..." onkeyup="filterRecipeOptions()">';
+    html += '</div>';
+    html += '<div class="recipe-options-list" id="recipeOptionsList">';
     
     for (var i = 0; i < suitableRecipes.length; i++) {
         var recipe = suitableRecipes[i];
-        html += '<div class="recipe-option" onclick="selectMealRecipe(\'' + day + '\', \'' + mealTime + '\', \'' + recipe.recipe_id + '\')">';
+        html += '<div class="recipe-option" data-name="' + recipe.name.toLowerCase() + '" onclick="selectMealRecipe(\'' + day + '\', \'' + mealTime + '\', \'' + recipe.recipe_id + '\')">';
         html += '<div class="recipe-option-name">' + recipe.name + '</div>';
         html += '<div class="recipe-option-tags">';
         html += '<span class="tag">' + recipe.category + '</span>';
@@ -568,12 +559,36 @@ function showMealReplacement(day, mealTime) {
     modalContent.innerHTML = html;
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
+    
+    // Focus on search input
+    setTimeout(function() {
+        var searchInput = document.getElementById('recipeSearchInput');
+        if (searchInput) {
+            searchInput.focus();
+        }
+    }, 100);
 }
 
 function closeMealReplacement() {
     var modal = document.querySelector('.meal-replacement-modal');
     if (modal) {
         modal.remove();
+    }
+}
+
+function filterRecipeOptions() {
+    var searchTerm = document.getElementById('recipeSearchInput').value.toLowerCase();
+    var options = document.querySelectorAll('.recipe-option');
+    
+    for (var i = 0; i < options.length; i++) {
+        var option = options[i];
+        var recipeName = option.getAttribute('data-name');
+        
+        if (recipeName.indexOf(searchTerm) !== -1) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = 'none';
+        }
     }
 }
 
