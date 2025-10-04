@@ -308,56 +308,34 @@ header p {
 
 .meal-plan-week {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
     margin-bottom: 20px;
 }
 
 .day-card {
     background: white;
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px;
     border: 1px solid #e9ecef;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .day-header {
     font-weight: 600;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #333;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     text-align: center;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     border-bottom: 2px solid #667eea;
 }
 
-.meal-slot {
-    margin-bottom: 15px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
-}
-
-.meal-slot.lunch {
-    border-left-color: #28a745;
-}
-
-.meal-slot.dinner {
-    border-left-color: #dc3545;
-}
-
-.meal-slot h4 {
-    color: #333;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-}
-
 .meal-item {
-    background: white;
-    padding: 10px;
+    background: #f8f9fa;
+    padding: 8px 12px;
     border-radius: 6px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     border: 1px solid #e9ecef;
     display: -webkit-flex;
     display: flex;
@@ -370,32 +348,27 @@ header p {
 .meal-item-name {
     font-weight: 500;
     color: #333;
-}
-
-.meal-item-type {
-    font-size: 0.8rem;
-    color: #666;
-    background: #e9ecef;
-    padding: 2px 6px;
-    border-radius: 10px;
+    font-size: 0.9rem;
 }
 
 .replace-btn {
     background: #667eea;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 15px;
     font-size: 0.8rem;
     cursor: pointer;
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
+    margin-top: 8px;
+    width: 100%;
 }
 
 .replace-btn:hover {
     background: #5a6fd8;
-    -webkit-transform: scale(1.05);
-    transform: scale(1.05);
+    -webkit-transform: translateY(-1px);
+    transform: translateY(-1px);
 }
 
 /* Meal Replacement Modal */

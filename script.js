@@ -461,41 +461,31 @@ function displayMealPlan() {
         html += '<div class="day-card">';
         html += '<div class="day-header">' + day + '</div>';
         
-        // Lunch section
-        html += '<div class="meal-slot lunch">';
-        html += '<h4>Lunch</h4>';
+        // Show all recipes for the day
+        var allRecipes = [];
         if (mealPlan[day].lunch) {
             for (var j = 0; j < mealPlan[day].lunch.length; j++) {
-                var recipe = mealPlan[day].lunch[j];
-                html += '<div class="meal-item">';
-                html += '<div class="meal-item-name">' + recipe.name + '</div>';
-                html += '<div class="meal-item-type">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</div>';
-                html += '</div>';
+                allRecipes.push(mealPlan[day].lunch[j]);
             }
-            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'lunch\')">Replace</button>';
-        } else {
-            html += '<div class="meal-item"><div class="meal-item-name">No lunch planned</div></div>';
-            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'lunch\')">Add Lunch</button>';
         }
-        html += '</div>';
-        
-        // Dinner section
-        html += '<div class="meal-slot dinner">';
-        html += '<h4>Dinner</h4>';
         if (mealPlan[day].dinner) {
             for (var j = 0; j < mealPlan[day].dinner.length; j++) {
-                var recipe = mealPlan[day].dinner[j];
+                allRecipes.push(mealPlan[day].dinner[j]);
+            }
+        }
+        
+        if (allRecipes.length > 0) {
+            for (var k = 0; k < allRecipes.length; k++) {
+                var recipe = allRecipes[k];
                 html += '<div class="meal-item">';
                 html += '<div class="meal-item-name">' + recipe.name + '</div>';
-                html += '<div class="meal-item-type">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</div>';
                 html += '</div>';
             }
-            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'dinner\')">Replace</button>';
+            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'all\')">Replace</button>';
         } else {
-            html += '<div class="meal-item"><div class="meal-item-name">No dinner planned</div></div>';
-            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'dinner\')">Add Dinner</button>';
+            html += '<div class="meal-item"><div class="meal-item-name">No meals planned</div></div>';
+            html += '<button class="replace-btn" onclick="showMealReplacement(\'' + day + '\', \'all\')">Add Meals</button>';
         }
-        html += '</div>';
         
         html += '</div>';
     }
@@ -508,7 +498,9 @@ function showMealReplacement(day, mealTime) {
     var suitableRecipes = [];
     for (var i = 0; i < recipes.length; i++) {
         var recipe = recipes[i];
-        if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
+        if (mealTime === 'all' && (recipe.is_lunch === 'True' || recipe.is_dinner === 'True')) {
+            suitableRecipes.push(recipe);
+        } else if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
             suitableRecipes.push(recipe);
         } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
             suitableRecipes.push(recipe);
@@ -516,7 +508,7 @@ function showMealReplacement(day, mealTime) {
     }
 
     if (suitableRecipes.length === 0) {
-        alert('No recipes available for ' + mealTime + '.');
+        alert('No recipes available.');
         return;
     }
 
@@ -529,7 +521,7 @@ function showMealReplacement(day, mealTime) {
     modalContent.className = 'modal-content';
     
     var html = '<div class="modal-header">';
-    html += '<h2>Choose ' + mealTime + ' for ' + day + '</h2>';
+    html += '<h2>Choose meals for ' + day + '</h2>';
     html += '<button class="close-btn" onclick="closeMealReplacement()">&times;</button>';
     html += '</div>';
     html += '<div class="modal-body">';
@@ -547,11 +539,6 @@ function showMealReplacement(day, mealTime) {
         var recipe = suitableRecipes[i];
         html += '<div class="recipe-option" data-name="' + recipe.name.toLowerCase() + '" onclick="selectMealRecipe(\'' + day + '\', \'' + mealTime + '\', \'' + recipe.recipe_id + '\')">';
         html += '<div class="recipe-option-name">' + recipe.name + '</div>';
-        html += '<div class="recipe-option-tags">';
-        html += '<span class="tag">' + recipe.category + '</span>';
-        html += '<span class="tag">' + recipe.cuisine + '</span>';
-        html += '<span class="tag">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</span>';
-        html += '</div>';
         html += '</div>';
     }
     
@@ -596,7 +583,9 @@ function selectRandomMeal(day, mealTime) {
     var suitableRecipes = [];
     for (var i = 0; i < recipes.length; i++) {
         var recipe = recipes[i];
-        if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
+        if (mealTime === 'all' && (recipe.is_lunch === 'True' || recipe.is_dinner === 'True')) {
+            suitableRecipes.push(recipe);
+        } else if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
             suitableRecipes.push(recipe);
         } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
             suitableRecipes.push(recipe);
@@ -604,24 +593,34 @@ function selectRandomMeal(day, mealTime) {
     }
 
     if (suitableRecipes.length === 0) {
-        alert('No recipes available for ' + mealTime + '.');
+        alert('No recipes available.');
         return;
     }
 
     var randomRecipe = suitableRecipes[Math.floor(Math.random() * suitableRecipes.length)];
     
-    if (randomRecipe.is_full_meal === 'True') {
-        mealPlan[day][mealTime] = [randomRecipe];
-    } else {
-        // For half meals, try to find a second recipe
-        var secondRecipe = null;
-        for (var i = 0; i < suitableRecipes.length; i++) {
-            if (suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
-                secondRecipe = suitableRecipes[i];
-                break;
-            }
+    if (mealTime === 'all') {
+        // For 'all', replace both lunch and dinner with the random recipe
+        if (randomRecipe.is_lunch === 'True') {
+            mealPlan[day].lunch = [randomRecipe];
         }
-        mealPlan[day][mealTime] = secondRecipe ? [randomRecipe, secondRecipe] : [randomRecipe];
+        if (randomRecipe.is_dinner === 'True') {
+            mealPlan[day].dinner = [randomRecipe];
+        }
+    } else {
+        if (randomRecipe.is_full_meal === 'True') {
+            mealPlan[day][mealTime] = [randomRecipe];
+        } else {
+            // For half meals, try to find a second recipe
+            var secondRecipe = null;
+            for (var i = 0; i < suitableRecipes.length; i++) {
+                if (suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
+                    secondRecipe = suitableRecipes[i];
+                    break;
+                }
+            }
+            mealPlan[day][mealTime] = secondRecipe ? [randomRecipe, secondRecipe] : [randomRecipe];
+        }
     }
 
     closeMealReplacement();
@@ -640,28 +639,38 @@ function selectMealRecipe(day, mealTime, recipeId) {
 
     if (!recipe) return;
 
-    if (recipe.is_full_meal === 'True') {
-        mealPlan[day][mealTime] = [recipe];
+    if (mealTime === 'all') {
+        // For 'all', replace both lunch and dinner with the selected recipe
+        if (recipe.is_lunch === 'True') {
+            mealPlan[day].lunch = [recipe];
+        }
+        if (recipe.is_dinner === 'True') {
+            mealPlan[day].dinner = [recipe];
+        }
     } else {
-        // For half meals, try to find a second recipe
-        var suitableRecipes = [];
-        for (var i = 0; i < recipes.length; i++) {
-            var r = recipes[i];
-            if (mealTime === 'lunch' && r.is_lunch === 'True' && r.recipe_id !== recipe.recipe_id) {
-                suitableRecipes.push(r);
-            } else if (mealTime === 'dinner' && r.is_dinner === 'True' && r.recipe_id !== recipe.recipe_id) {
-                suitableRecipes.push(r);
+        if (recipe.is_full_meal === 'True') {
+            mealPlan[day][mealTime] = [recipe];
+        } else {
+            // For half meals, try to find a second recipe
+            var suitableRecipes = [];
+            for (var i = 0; i < recipes.length; i++) {
+                var r = recipes[i];
+                if (mealTime === 'lunch' && r.is_lunch === 'True' && r.recipe_id !== recipe.recipe_id) {
+                    suitableRecipes.push(r);
+                } else if (mealTime === 'dinner' && r.is_dinner === 'True' && r.recipe_id !== recipe.recipe_id) {
+                    suitableRecipes.push(r);
+                }
             }
-        }
-        
-        var secondRecipe = null;
-        for (var i = 0; i < suitableRecipes.length; i++) {
-            if (suitableRecipes[i].is_full_meal === 'False') {
-                secondRecipe = suitableRecipes[i];
-                break;
+            
+            var secondRecipe = null;
+            for (var i = 0; i < suitableRecipes.length; i++) {
+                if (suitableRecipes[i].is_full_meal === 'False') {
+                    secondRecipe = suitableRecipes[i];
+                    break;
+                }
             }
+            mealPlan[day][mealTime] = secondRecipe ? [recipe, secondRecipe] : [recipe];
         }
-        mealPlan[day][mealTime] = secondRecipe ? [recipe, secondRecipe] : [recipe];
     }
 
     closeMealReplacement();
