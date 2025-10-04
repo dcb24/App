@@ -1,24 +1,24 @@
 // Global variables
-let recipes = [];
-let filteredRecipes = [];
-let mealPlan = {};
-let selectedRecipe = null;
+var recipes = [];
+var filteredRecipes = [];
+var mealPlan = {};
+var selectedRecipe = null;
 
 // DOM elements
-const navButtons = document.querySelectorAll('.nav-btn');
-const sections = document.querySelectorAll('.section');
-const recipesList = document.getElementById('recipesList');
-const loading = document.getElementById('loading');
-const searchInput = document.getElementById('searchInput');
-const categoryFilter = document.getElementById('categoryFilter');
-const cuisineFilter = document.getElementById('cuisineFilter');
-const recipeForm = document.getElementById('recipeForm');
-const generateRandomBtn = document.getElementById('generateRandom');
-const randomRecipeDisplay = document.getElementById('randomRecipeDisplay');
-const generateMealPlanBtn = document.getElementById('generateMealPlan');
-const clearMealPlanBtn = document.getElementById('clearMealPlan');
-const mealPlanDisplay = document.getElementById('mealPlanDisplay');
-const ingredientList = document.getElementById('ingredientList');
+var navButtons = document.querySelectorAll('.nav-btn');
+var sections = document.querySelectorAll('.section');
+var recipesList = document.getElementById('recipesList');
+var loading = document.getElementById('loading');
+var searchInput = document.getElementById('searchInput');
+var categoryFilter = document.getElementById('categoryFilter');
+var cuisineFilter = document.getElementById('cuisineFilter');
+var recipeForm = document.getElementById('recipeForm');
+var generateRandomBtn = document.getElementById('generateRandom');
+var randomRecipeDisplay = document.getElementById('randomRecipeDisplay');
+var generateMealPlanBtn = document.getElementById('generateMealPlan');
+var clearMealPlanBtn = document.getElementById('clearMealPlan');
+var mealPlanDisplay = document.getElementById('mealPlanDisplay');
+var ingredientList = document.getElementById('ingredientList');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
@@ -36,9 +36,11 @@ function initializeApp() {
 
 function setupEventListeners() {
     // Navigation
-    navButtons.forEach(btn => {
-        btn.addEventListener('click', () => switchSection(btn.dataset.section));
-    });
+    for (var i = 0; i < navButtons.length; i++) {
+        navButtons[i].addEventListener('click', function() {
+            switchSection(this.dataset.section);
+        });
+    }
 
     // Search and filters
     searchInput.addEventListener('input', filterRecipes);
@@ -58,14 +60,14 @@ function setupEventListeners() {
 
 function switchSection(sectionId) {
     // Update navigation
-    navButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.section === sectionId);
-    });
+    for (var i = 0; i < navButtons.length; i++) {
+        navButtons[i].classList.toggle('active', navButtons[i].dataset.section === sectionId);
+    }
 
     // Update sections
-    sections.forEach(section => {
-        section.classList.toggle('active', section.id === sectionId);
-    });
+    for (var i = 0; i < sections.length; i++) {
+        sections[i].classList.toggle('active', sections[i].id === sectionId);
+    }
 
     // Load content for the active section
     if (sectionId === 'recipes') {
@@ -200,42 +202,49 @@ function displayRecipes() {
         return;
     }
 
-    recipesList.innerHTML = filteredRecipes.map(recipe => `
-        <div class="recipe-card" onclick="showRecipeDetails('${recipe.recipe_id}')">
-            <h3>${recipe.name}</h3>
-            <div class="recipe-meta">
-                <span>${recipe.category}</span>
-                <span>${recipe.cuisine}</span>
-                <span>${recipe.difficulty}</span>
-                <span class="rating">★ ${recipe.rating}</span>
-            </div>
-            <div class="recipe-info">
-                <p><strong>Cooking Method:</strong> ${recipe.cooking_method}</p>
-                <p><strong>Prep Time:</strong> ${recipe.prep_time_minutes} min</p>
-                <p><strong>Cook Time:</strong> ${recipe.cook_time_minutes} min</p>
-                <p><strong>Servings:</strong> ${recipe.servings}</p>
-                <p><strong>Calories:</strong> ${recipe.calories_per_serving} per serving</p>
-                <p><strong>Author:</strong> ${recipe.author}</p>
-                <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
-            </div>
-        </div>
-    `).join('');
+    var html = '';
+    for (var i = 0; i < filteredRecipes.length; i++) {
+        var recipe = filteredRecipes[i];
+        html += '<div class="recipe-card" onclick="showRecipeDetails(\'' + recipe.recipe_id + '\')">';
+        html += '<h3>' + recipe.name + '</h3>';
+        html += '<div class="recipe-meta">';
+        html += '<span>' + recipe.category + '</span>';
+        html += '<span>' + recipe.cuisine + '</span>';
+        html += '<span>' + recipe.difficulty + '</span>';
+        html += '<span class="rating">★ ' + recipe.rating + '</span>';
+        html += '</div>';
+        html += '<div class="recipe-info">';
+        html += '<p><strong>Cooking Method:</strong> ' + recipe.cooking_method + '</p>';
+        html += '<p><strong>Prep Time:</strong> ' + recipe.prep_time_minutes + ' min</p>';
+        html += '<p><strong>Cook Time:</strong> ' + recipe.cook_time_minutes + ' min</p>';
+        html += '<p><strong>Servings:</strong> ' + recipe.servings + '</p>';
+        html += '<p><strong>Calories:</strong> ' + recipe.calories_per_serving + ' per serving</p>';
+        html += '<p><strong>Author:</strong> ' + recipe.author + '</p>';
+        html += '<p><strong>Ingredients:</strong> ' + recipe.ingredients + '</p>';
+        html += '</div>';
+        html += '</div>';
+    }
+    recipesList.innerHTML = html;
 }
 
 function filterRecipes() {
-    const searchTerm = searchInput.value.toLowerCase();
-    const selectedCategory = categoryFilter.value;
-    const selectedCuisine = cuisineFilter.value;
+    var searchTerm = searchInput.value.toLowerCase();
+    var selectedCategory = categoryFilter.value;
+    var selectedCuisine = cuisineFilter.value;
 
-    filteredRecipes = recipes.filter(recipe => {
-        const matchesSearch = recipe.name.toLowerCase().includes(searchTerm) ||
-                            recipe.ingredients.toLowerCase().includes(searchTerm) ||
-                            recipe.author.toLowerCase().includes(searchTerm);
-        const matchesCategory = !selectedCategory || recipe.category === selectedCategory;
-        const matchesCuisine = !selectedCuisine || recipe.cuisine === selectedCuisine;
+    filteredRecipes = [];
+    for (var i = 0; i < recipes.length; i++) {
+        var recipe = recipes[i];
+        var matchesSearch = recipe.name.toLowerCase().indexOf(searchTerm) !== -1 ||
+                           recipe.ingredients.toLowerCase().indexOf(searchTerm) !== -1 ||
+                           recipe.author.toLowerCase().indexOf(searchTerm) !== -1;
+        var matchesCategory = !selectedCategory || recipe.category === selectedCategory;
+        var matchesCuisine = !selectedCuisine || recipe.cuisine === selectedCuisine;
 
-        return matchesSearch && matchesCategory && matchesCuisine;
-    });
+        if (matchesSearch && matchesCategory && matchesCuisine) {
+            filteredRecipes.push(recipe);
+        }
+    }
 
     displayRecipes();
 }
@@ -244,8 +253,7 @@ function handleFormSubmit(e) {
     e.preventDefault();
     
     // Get form data
-    const formData = new FormData(recipeForm);
-    const newRecipe = {
+    var newRecipe = {
         recipe_id: (recipes.length + 1).toString(),
         name: document.getElementById('recipeName').value,
         category: document.getElementById('recipeCategory').value,
@@ -265,12 +273,16 @@ function handleFormSubmit(e) {
         is_vegetarian: document.getElementById('recipeVegetarian').checked.toString(),
         is_vegan: document.getElementById('recipeVegan').checked.toString(),
         is_gluten_free: document.getElementById('recipeGlutenFree').checked.toString(),
-        is_dairy_free: document.getElementById('recipeDairyFree').checked.toString()
+        is_dairy_free: document.getElementById('recipeDairyFree').checked.toString(),
+        is_full_meal: 'True', // Default to full meal for user-added recipes
+        is_lunch: 'True', // Default to suitable for lunch
+        is_dinner: 'True', // Default to suitable for dinner
+        is_sweet: 'False' // Default to not sweet
     };
 
     // Add to recipes array
     recipes.push(newRecipe);
-    filteredRecipes = [...recipes];
+    filteredRecipes = recipes.slice(); // Safari-compatible array copy
 
     // Reset form
     recipeForm.reset();
@@ -288,148 +300,104 @@ function generateRandomRecipe() {
         return;
     }
 
-    const randomIndex = Math.floor(Math.random() * recipes.length);
-    const recipe = recipes[randomIndex];
+    var randomIndex = Math.floor(Math.random() * recipes.length);
+    var recipe = recipes[randomIndex];
 
-    randomRecipeDisplay.innerHTML = `
-        <h3>${recipe.name}</h3>
-        <div class="recipe-details">
-            <div class="detail-item">
-                <div class="detail-label">Category</div>
-                <div class="detail-value">${recipe.category}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Cuisine</div>
-                <div class="detail-value">${recipe.cuisine}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Difficulty</div>
-                <div class="detail-value">${recipe.difficulty}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Cooking Method</div>
-                <div class="detail-value">${recipe.cooking_method}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Prep Time</div>
-                <div class="detail-value">${recipe.prep_time_minutes} minutes</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Cook Time</div>
-                <div class="detail-value">${recipe.cook_time_minutes} minutes</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Total Time</div>
-                <div class="detail-value">${recipe.total_time_minutes} minutes</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Servings</div>
-                <div class="detail-value">${recipe.servings}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Calories per Serving</div>
-                <div class="detail-value">${recipe.calories_per_serving}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Rating</div>
-                <div class="detail-value">★ ${recipe.rating}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Author</div>
-                <div class="detail-value">${recipe.author}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Date Created</div>
-                <div class="detail-value">${recipe.date_created}</div>
-            </div>
-        </div>
-        <div class="ingredients-section">
-            <h4>Ingredients</h4>
-            <div class="ingredients-list">
-                ${recipe.ingredients}
-            </div>
-        </div>
-        <div class="instructions-section">
-            <h4>Instructions</h4>
-            <div class="instructions-text">
-                ${recipe.instructions}
-            </div>
-        </div>
-        <div class="dietary-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-            <h4>Dietary Information</h4>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
-                ${recipe.is_vegetarian === 'True' ? '<span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Vegetarian</span>' : ''}
-                ${recipe.is_vegan === 'True' ? '<span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Vegan</span>' : ''}
-                ${recipe.is_gluten_free === 'True' ? '<span style="background: #17a2b8; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Gluten Free</span>' : ''}
-                ${recipe.is_dairy_free === 'True' ? '<span style="background: #ffc107; color: #333; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Dairy Free</span>' : ''}
-            </div>
-        </div>
-    `;
+    var html = '<h3>' + recipe.name + '</h3>';
+    html += '<div class="recipe-details">';
+    html += '<div class="detail-item"><div class="detail-label">Category</div><div class="detail-value">' + recipe.category + '</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Cuisine</div><div class="detail-value">' + recipe.cuisine + '</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Difficulty</div><div class="detail-value">' + recipe.difficulty + '</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Cooking Method</div><div class="detail-value">' + recipe.cooking_method + '</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Prep Time</div><div class="detail-value">' + recipe.prep_time_minutes + ' minutes</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Cook Time</div><div class="detail-value">' + recipe.cook_time_minutes + ' minutes</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Total Time</div><div class="detail-value">' + recipe.total_time_minutes + ' minutes</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Servings</div><div class="detail-value">' + recipe.servings + '</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Calories per Serving</div><div class="detail-value">' + recipe.calories_per_serving + '</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Rating</div><div class="detail-value">★ ' + recipe.rating + '</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Author</div><div class="detail-value">' + recipe.author + '</div></div>';
+    html += '<div class="detail-item"><div class="detail-label">Date Created</div><div class="detail-value">' + recipe.date_created + '</div></div>';
+    html += '</div>';
+    html += '<div class="ingredients-section"><h4>Ingredients</h4><div class="ingredients-list">' + recipe.ingredients + '</div></div>';
+    html += '<div class="instructions-section"><h4>Instructions</h4><div class="instructions-text">' + recipe.instructions + '</div></div>';
+    html += '<div class="dietary-info" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">';
+    html += '<h4>Dietary Information</h4><div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">';
+    if (recipe.is_vegetarian === 'True') html += '<span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Vegetarian</span>';
+    if (recipe.is_vegan === 'True') html += '<span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Vegan</span>';
+    if (recipe.is_gluten_free === 'True') html += '<span style="background: #17a2b8; color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Gluten Free</span>';
+    if (recipe.is_dairy_free === 'True') html += '<span style="background: #ffc107; color: #333; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">Dairy Free</span>';
+    html += '</div></div>';
+    
+    randomRecipeDisplay.innerHTML = html;
 }
 
 // Recipe Details Functions
 function showRecipeDetails(recipeId) {
-    const recipe = recipes.find(r => r.recipe_id === recipeId);
+    var recipe = null;
+    for (var i = 0; i < recipes.length; i++) {
+        if (recipes[i].recipe_id === recipeId) {
+            recipe = recipes[i];
+            break;
+        }
+    }
     if (!recipe) return;
 
     selectedRecipe = recipe;
     
     // Create modal or detailed view
-    const modal = document.createElement('div');
+    var modal = document.createElement('div');
     modal.className = 'recipe-modal';
-    modal.innerHTML = `
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>${recipe.name}</h2>
-                <button class="close-btn" onclick="closeRecipeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="recipe-details-grid">
-                    <div class="detail-section">
-                        <h3>Basic Information</h3>
-                        <p><strong>Category:</strong> ${recipe.category}</p>
-                        <p><strong>Cuisine:</strong> ${recipe.cuisine}</p>
-                        <p><strong>Difficulty:</strong> ${recipe.difficulty}</p>
-                        <p><strong>Cooking Method:</strong> ${recipe.cooking_method}</p>
-                        <p><strong>Rating:</strong> ★ ${recipe.rating}</p>
-                    </div>
-                    <div class="detail-section">
-                        <h3>Timing & Nutrition</h3>
-                        <p><strong>Prep Time:</strong> ${recipe.prep_time_minutes} minutes</p>
-                        <p><strong>Cook Time:</strong> ${recipe.cook_time_minutes} minutes</p>
-                        <p><strong>Total Time:</strong> ${recipe.total_time_minutes} minutes</p>
-                        <p><strong>Servings:</strong> ${recipe.servings}</p>
-                        <p><strong>Calories per Serving:</strong> ${recipe.calories_per_serving}</p>
-                    </div>
-                    <div class="detail-section">
-                        <h3>Dietary Information</h3>
-                        <div class="dietary-tags">
-                            ${recipe.is_vegetarian === 'True' ? '<span class="dietary-tag vegetarian">Vegetarian</span>' : ''}
-                            ${recipe.is_vegan === 'True' ? '<span class="dietary-tag vegan">Vegan</span>' : ''}
-                            ${recipe.is_gluten_free === 'True' ? '<span class="dietary-tag gluten-free">Gluten Free</span>' : ''}
-                            ${recipe.is_dairy_free === 'True' ? '<span class="dietary-tag dairy-free">Dairy Free</span>' : ''}
-                            ${recipe.is_full_meal === 'True' ? '<span class="dietary-tag full-meal">Full Meal</span>' : '<span class="dietary-tag half-meal">Half Meal</span>'}
-                            ${recipe.is_lunch === 'True' ? '<span class="dietary-tag lunch">Lunch</span>' : ''}
-                            ${recipe.is_dinner === 'True' ? '<span class="dietary-tag dinner">Dinner</span>' : ''}
-                            ${recipe.is_sweet === 'True' ? '<span class="dietary-tag sweet">Sweet</span>' : ''}
-                        </div>
-                    </div>
-                </div>
-                <div class="ingredients-section">
-                    <h3>Ingredients</h3>
-                    <div class="ingredients-list">${recipe.ingredients}</div>
-                </div>
-                <div class="instructions-section">
-                    <h3>Instructions</h3>
-                    <div class="instructions-text">${recipe.instructions}</div>
-                </div>
-                <div class="recipe-meta-info">
-                    <p><strong>Author:</strong> ${recipe.author}</p>
-                    <p><strong>Date Created:</strong> ${recipe.date_created}</p>
-                </div>
-            </div>
-        </div>
-    `;
+    
+    var html = '<div class="modal-content">';
+    html += '<div class="modal-header">';
+    html += '<h2>' + recipe.name + '</h2>';
+    html += '<button class="close-btn" onclick="closeRecipeModal()">&times;</button>';
+    html += '</div>';
+    html += '<div class="modal-body">';
+    html += '<div class="recipe-details-grid">';
+    html += '<div class="detail-section">';
+    html += '<h3>Basic Information</h3>';
+    html += '<p><strong>Category:</strong> ' + recipe.category + '</p>';
+    html += '<p><strong>Cuisine:</strong> ' + recipe.cuisine + '</p>';
+    html += '<p><strong>Difficulty:</strong> ' + recipe.difficulty + '</p>';
+    html += '<p><strong>Cooking Method:</strong> ' + recipe.cooking_method + '</p>';
+    html += '<p><strong>Rating:</strong> ★ ' + recipe.rating + '</p>';
+    html += '</div>';
+    html += '<div class="detail-section">';
+    html += '<h3>Timing & Nutrition</h3>';
+    html += '<p><strong>Prep Time:</strong> ' + recipe.prep_time_minutes + ' minutes</p>';
+    html += '<p><strong>Cook Time:</strong> ' + recipe.cook_time_minutes + ' minutes</p>';
+    html += '<p><strong>Total Time:</strong> ' + recipe.total_time_minutes + ' minutes</p>';
+    html += '<p><strong>Servings:</strong> ' + recipe.servings + '</p>';
+    html += '<p><strong>Calories per Serving:</strong> ' + recipe.calories_per_serving + '</p>';
+    html += '</div>';
+    html += '<div class="detail-section">';
+    html += '<h3>Dietary Information</h3>';
+    html += '<div class="dietary-tags">';
+    if (recipe.is_vegetarian === 'True') html += '<span class="dietary-tag vegetarian">Vegetarian</span>';
+    if (recipe.is_vegan === 'True') html += '<span class="dietary-tag vegan">Vegan</span>';
+    if (recipe.is_gluten_free === 'True') html += '<span class="dietary-tag gluten-free">Gluten Free</span>';
+    if (recipe.is_dairy_free === 'True') html += '<span class="dietary-tag dairy-free">Dairy Free</span>';
+    if (recipe.is_full_meal === 'True') html += '<span class="dietary-tag full-meal">Full Meal</span>';
+    else html += '<span class="dietary-tag half-meal">Half Meal</span>';
+    if (recipe.is_lunch === 'True') html += '<span class="dietary-tag lunch">Lunch</span>';
+    if (recipe.is_dinner === 'True') html += '<span class="dietary-tag dinner">Dinner</span>';
+    if (recipe.is_sweet === 'True') html += '<span class="dietary-tag sweet">Sweet</span>';
+    html += '</div></div></div>';
+    html += '<div class="ingredients-section">';
+    html += '<h3>Ingredients</h3>';
+    html += '<div class="ingredients-list">' + recipe.ingredients + '</div>';
+    html += '</div>';
+    html += '<div class="instructions-section">';
+    html += '<h3>Instructions</h3>';
+    html += '<div class="instructions-text">' + recipe.instructions + '</div>';
+    html += '</div>';
+    html += '<div class="recipe-meta-info">';
+    html += '<p><strong>Author:</strong> ' + recipe.author + '</p>';
+    html += '<p><strong>Date Created:</strong> ' + recipe.date_created + '</p>';
+    html += '</div></div></div>';
+    
+    modal.innerHTML = html;
     
     document.body.appendChild(modal);
 }
@@ -448,107 +416,130 @@ function generateMealPlan() {
         return;
     }
 
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     mealPlan = {};
 
-    days.forEach(day => {
+    for (var i = 0; i < days.length; i++) {
+        var day = days[i];
         mealPlan[day] = {
             lunch: generateMealForTime('lunch'),
             dinner: generateMealForTime('dinner')
         };
-    });
+    }
 
     displayMealPlan();
     generateIngredientList();
 }
 
 function generateMealForTime(mealTime) {
-    const suitableRecipes = recipes.filter(recipe => {
-        if (mealTime === 'lunch') {
-            return recipe.is_lunch === 'True';
-        } else {
-            return recipe.is_dinner === 'True';
+    var suitableRecipes = [];
+    for (var i = 0; i < recipes.length; i++) {
+        var recipe = recipes[i];
+        if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
+            suitableRecipes.push(recipe);
+        } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
+            suitableRecipes.push(recipe);
         }
-    });
+    }
 
     if (suitableRecipes.length === 0) {
         return null;
     }
 
-    const randomRecipe = suitableRecipes[Math.floor(Math.random() * suitableRecipes.length)];
+    var randomRecipe = suitableRecipes[Math.floor(Math.random() * suitableRecipes.length)];
     
     if (randomRecipe.is_full_meal === 'True') {
         return [randomRecipe];
     } else {
         // For half meals, we need two recipes
-        const secondRecipe = suitableRecipes.find(r => 
-            r.recipe_id !== randomRecipe.recipe_id && r.is_full_meal === 'False'
-        );
+        var secondRecipe = null;
+        for (var i = 0; i < suitableRecipes.length; i++) {
+            if (suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
+                secondRecipe = suitableRecipes[i];
+                break;
+            }
+        }
         return secondRecipe ? [randomRecipe, secondRecipe] : [randomRecipe];
     }
 }
 
 function displayMealPlan() {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
-    mealPlanDisplay.innerHTML = `
-        <div class="week-grid">
-            ${days.map(day => `
-                <div class="day-card">
-                    <div class="day-header">${day}</div>
-                    <div class="meal-slot lunch">
-                        <h4>Lunch</h4>
-                        ${mealPlan[day].lunch ? mealPlan[day].lunch.map(recipe => `
-                            <div class="meal-item">
-                                <div>
-                                    <div class="meal-item-name">${recipe.name}</div>
-                                    <div class="meal-item-type">${recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal'}</div>
-                                </div>
-                                <button class="replace-btn" onclick="replaceMeal('${day}', 'lunch', '${recipe.recipe_id}')">Replace</button>
-                            </div>
-                        `).join('') : '<div class="meal-item"><div class="meal-item-name">No lunch planned</div></div>'}
-                    </div>
-                    <div class="meal-slot dinner">
-                        <h4>Dinner</h4>
-                        ${mealPlan[day].dinner ? mealPlan[day].dinner.map(recipe => `
-                            <div class="meal-item">
-                                <div>
-                                    <div class="meal-item-name">${recipe.name}</div>
-                                    <div class="meal-item-type">${recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal'}</div>
-                                </div>
-                                <button class="replace-btn" onclick="replaceMeal('${day}', 'dinner', '${recipe.recipe_id}')">Replace</button>
-                            </div>
-                        `).join('') : '<div class="meal-item"><div class="meal-item-name">No dinner planned</div></div>'}
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    var html = '<div class="week-grid">';
+    for (var i = 0; i < days.length; i++) {
+        var day = days[i];
+        html += '<div class="day-card">';
+        html += '<div class="day-header">' + day + '</div>';
+        html += '<div class="meal-slot lunch">';
+        html += '<h4>Lunch</h4>';
+        if (mealPlan[day].lunch) {
+            for (var j = 0; j < mealPlan[day].lunch.length; j++) {
+                var recipe = mealPlan[day].lunch[j];
+                html += '<div class="meal-item">';
+                html += '<div>';
+                html += '<div class="meal-item-name">' + recipe.name + '</div>';
+                html += '<div class="meal-item-type">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</div>';
+                html += '</div>';
+                html += '<button class="replace-btn" onclick="replaceMeal(\'' + day + '\', \'lunch\', \'' + recipe.recipe_id + '\')">Replace</button>';
+                html += '</div>';
+            }
+        } else {
+            html += '<div class="meal-item"><div class="meal-item-name">No lunch planned</div></div>';
+        }
+        html += '</div>';
+        html += '<div class="meal-slot dinner">';
+        html += '<h4>Dinner</h4>';
+        if (mealPlan[day].dinner) {
+            for (var j = 0; j < mealPlan[day].dinner.length; j++) {
+                var recipe = mealPlan[day].dinner[j];
+                html += '<div class="meal-item">';
+                html += '<div>';
+                html += '<div class="meal-item-name">' + recipe.name + '</div>';
+                html += '<div class="meal-item-type">' + (recipe.is_full_meal === 'True' ? 'Full Meal' : 'Half Meal') + '</div>';
+                html += '</div>';
+                html += '<button class="replace-btn" onclick="replaceMeal(\'' + day + '\', \'dinner\', \'' + recipe.recipe_id + '\')">Replace</button>';
+                html += '</div>';
+            }
+        } else {
+            html += '<div class="meal-item"><div class="meal-item-name">No dinner planned</div></div>';
+        }
+        html += '</div></div>';
+    }
+    html += '</div>';
+    
+    mealPlanDisplay.innerHTML = html;
 }
 
 function replaceMeal(day, mealTime, currentRecipeId) {
-    const suitableRecipes = recipes.filter(recipe => {
-        if (mealTime === 'lunch') {
-            return recipe.is_lunch === 'True' && recipe.recipe_id !== currentRecipeId;
-        } else {
-            return recipe.is_dinner === 'True' && recipe.recipe_id !== currentRecipeId;
+    var suitableRecipes = [];
+    for (var i = 0; i < recipes.length; i++) {
+        var recipe = recipes[i];
+        if (mealTime === 'lunch' && recipe.is_lunch === 'True' && recipe.recipe_id !== currentRecipeId) {
+            suitableRecipes.push(recipe);
+        } else if (mealTime === 'dinner' && recipe.is_dinner === 'True' && recipe.recipe_id !== currentRecipeId) {
+            suitableRecipes.push(recipe);
         }
-    });
+    }
 
     if (suitableRecipes.length === 0) {
         alert('No alternative recipes available.');
         return;
     }
 
-    const randomRecipe = suitableRecipes[Math.floor(Math.random() * suitableRecipes.length)];
+    var randomRecipe = suitableRecipes[Math.floor(Math.random() * suitableRecipes.length)];
     
     if (randomRecipe.is_full_meal === 'True') {
         mealPlan[day][mealTime] = [randomRecipe];
     } else {
         // For half meals, try to find a second recipe
-        const secondRecipe = suitableRecipes.find(r => 
-            r.recipe_id !== randomRecipe.recipe_id && r.is_full_meal === 'False'
-        );
+        var secondRecipe = null;
+        for (var i = 0; i < suitableRecipes.length; i++) {
+            if (suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
+                secondRecipe = suitableRecipes[i];
+                break;
+            }
+        }
         mealPlan[day][mealTime] = secondRecipe ? [randomRecipe, secondRecipe] : [randomRecipe];
     }
 
@@ -563,44 +554,64 @@ function clearMealPlan() {
 }
 
 function generateIngredientList() {
-    const ingredientCounts = {};
-    const allRecipes = [];
+    var ingredientCounts = {};
+    var allRecipes = [];
 
-    Object.keys(mealPlan).forEach(day => {
-        ['lunch', 'dinner'].forEach(mealTime => {
-            if (mealPlan[day][mealTime]) {
-                mealPlan[day][mealTime].forEach(recipe => {
-                    allRecipes.push({...recipe, day, mealTime});
-                    const ingredients = recipe.ingredients.split(',').map(ing => ing.trim());
-                    ingredients.forEach(ingredient => {
-                        ingredientCounts[ingredient] = (ingredientCounts[ingredient] || 0) + 1;
-                    });
-                });
+    for (var day in mealPlan) {
+        if (mealPlan.hasOwnProperty(day)) {
+            var mealTimes = ['lunch', 'dinner'];
+            for (var i = 0; i < mealTimes.length; i++) {
+                var mealTime = mealTimes[i];
+                if (mealPlan[day][mealTime]) {
+                    for (var j = 0; j < mealPlan[day][mealTime].length; j++) {
+                        var recipe = mealPlan[day][mealTime][j];
+                        var recipeWithDay = {};
+                        for (var key in recipe) {
+                            if (recipe.hasOwnProperty(key)) {
+                                recipeWithDay[key] = recipe[key];
+                            }
+                        }
+                        recipeWithDay.day = day;
+                        recipeWithDay.mealTime = mealTime;
+                        allRecipes.push(recipeWithDay);
+                        
+                        var ingredients = recipe.ingredients.split(',');
+                        for (var k = 0; k < ingredients.length; k++) {
+                            var ingredient = ingredients[k].trim();
+                            ingredientCounts[ingredient] = (ingredientCounts[ingredient] || 0) + 1;
+                        }
+                    }
+                }
             }
-        });
-    });
+        }
+    }
 
-    const sortedIngredients = Object.entries(ingredientCounts)
-        .sort(([,a], [,b]) => b - a);
+    var sortedIngredients = [];
+    for (var ingredient in ingredientCounts) {
+        if (ingredientCounts.hasOwnProperty(ingredient)) {
+            sortedIngredients.push([ingredient, ingredientCounts[ingredient]]);
+        }
+    }
+    sortedIngredients.sort(function(a, b) { return b[1] - a[1]; });
 
-    ingredientList.innerHTML = `
-        <h3>Shopping List</h3>
-        <div class="ingredient-grid">
-            ${sortedIngredients.map(([ingredient, count]) => `
-                <div class="ingredient-item">
-                    <span class="ingredient-name">${ingredient}</span>
-                    <span class="ingredient-count">${count}</span>
-                </div>
-            `).join('')}
-        </div>
-        <div class="recipe-list">
-            <h4>Recipes in this plan:</h4>
-            ${allRecipes.map(recipe => `
-                <div class="recipe-item">
-                    <span class="recipe-item-name">${recipe.name}</span>
-                    <span class="recipe-item-day">${recipe.day} ${recipe.mealTime}</span>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    var html = '<h3>Shopping List</h3>';
+    html += '<div class="ingredient-grid">';
+    for (var i = 0; i < sortedIngredients.length; i++) {
+        html += '<div class="ingredient-item">';
+        html += '<span class="ingredient-name">' + sortedIngredients[i][0] + '</span>';
+        html += '<span class="ingredient-count">' + sortedIngredients[i][1] + '</span>';
+        html += '</div>';
+    }
+    html += '</div>';
+    html += '<div class="recipe-list">';
+    html += '<h4>Recipes in this plan:</h4>';
+    for (var i = 0; i < allRecipes.length; i++) {
+        html += '<div class="recipe-item">';
+        html += '<span class="recipe-item-name">' + allRecipes[i].name + '</span>';
+        html += '<span class="recipe-item-day">' + allRecipes[i].day + ' ' + allRecipes[i].mealTime + '</span>';
+        html += '</div>';
+    }
+    html += '</div>';
+    
+    ingredientList.innerHTML = html;
 }

@@ -3,6 +3,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
 body {
@@ -39,10 +40,13 @@ header p {
 
 /* Navigation Styles */
 .main-nav {
+    display: -webkit-flex;
     display: flex;
+    -webkit-justify-content: center;
     justify-content: center;
     gap: 10px;
     margin-bottom: 30px;
+    -webkit-flex-wrap: wrap;
     flex-wrap: wrap;
 }
 
@@ -53,16 +57,21 @@ header p {
     padding: 12px 20px;
     border-radius: 25px;
     cursor: pointer;
+    -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
     font-size: 1rem;
+    display: -webkit-flex;
     display: flex;
+    -webkit-align-items: center;
     align-items: center;
     gap: 8px;
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 
 .nav-btn:hover {
     background: rgba(255, 255, 255, 0.3);
+    -webkit-transform: translateY(-2px);
     transform: translateY(-2px);
 }
 
