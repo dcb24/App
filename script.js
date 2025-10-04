@@ -695,7 +695,8 @@ function selectRandomMeal(day, mealTime) {
 function selectMealRecipe(day, mealTime, recipeId) {
     var recipe = null;
     for (var i = 0; i < recipes.length; i++) {
-        if (recipes[i].recipe_id === recipeId) {
+        // Normalize ids to strings to avoid type mismatches
+        if (String(recipes[i].recipe_id) === String(recipeId)) {
             recipe = recipes[i];
             break;
         }
