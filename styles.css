@@ -733,23 +733,33 @@ header p {
 
 .ingredient-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.ingredient-item-wrapper {
+    background: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
 }
 
 .ingredient-item {
-    background: white;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border-left: 4px solid #28a745;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 8px;
 }
 
 .ingredient-name {
     font-weight: 500;
     color: #333;
+}
+
+.ingredient-counts {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .ingredient-count {
@@ -759,6 +769,46 @@ header p {
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 600;
+}
+
+.ingredient-count-required {
+    background: #ff8c00;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    position: relative;
+}
+
+.ingredient-count-required::before {
+    content: 'Required: ';
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+.ingredient-recipes-list {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    padding-top: 8px;
+    border-top: 1px solid #e9ecef;
+    line-height: 1.6;
+}
+
+.ingredient-recipes-label {
+    font-weight: 600;
+    color: #667eea;
+    margin-right: 5px;
+}
+
+.ingredient-recipe-tag {
+    color: #333;
+}
+
+.ingredient-recipe-tag small {
+    color: #999;
+    font-size: 0.8em;
 }
 
 .recipe-list {

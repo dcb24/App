@@ -3,6 +3,7 @@ var recipes = [];
 var filteredRecipes = [];
 var mealPlan = {};
 var selectedRecipe = null;
+var currentIngredientRequirements = {};
 
 // DOM elements
 var navButtons = document.querySelectorAll('.nav-btn');
@@ -467,6 +468,9 @@ function generateMealPlan() {
     displayMealPlan();
     generateIngredientList();
     
+    // Clear ingredient requirements for regular plan
+    currentIngredientRequirements = {};
+    
     // Remove ingredient warning if present
     var existingWarning = document.getElementById('ingredientWarning');
     if (existingWarning) {
@@ -746,6 +750,7 @@ function selectMealRecipe(day, mealTime, recipeId) {
 
 function clearMealPlan() {
     mealPlan = {};
+    currentIngredientRequirements = {};
     mealPlanDisplay.innerHTML = '<div class="text-center">No meal plan generated yet. Click "Generate Weekly Plan" to create one.</div>';
     ingredientList.innerHTML = '';
     
@@ -758,6 +763,7 @@ function clearMealPlan() {
 
 function generateIngredientList() {
     var ingredientCounts = {};
+    var ingredientRecipes = {}; // Track which recipes use each ingredient
     var allRecipes = [];
 
     for (var day in mealPlan) {
@@ -782,6 +788,16 @@ function generateIngredientList() {
                         for (var k = 0; k < ingredients.length; k++) {
                             var ingredient = ingredients[k].trim();
                             ingredientCounts[ingredient] = (ingredientCounts[ingredient] || 0) + 1;
+                            
+                            // Track which recipes use this ingredient
+                            if (!ingredientRecipes[ingredient]) {
+                                ingredientRecipes[ingredient] = [];
+                            }
+                            ingredientRecipes[ingredient].push({
+                                name: recipe.name,
+                                day: day,
+                                mealTime: mealTime
+                            });
                         }
                     }
                 }
@@ -798,11 +814,63 @@ function generateIngredientList() {
     sortedIngredients.sort(function(a, b) { return b[1] - a[1]; });
 
     var html = '<h3>Shopping List</h3>';
+    
+    // Add legend if there are ingredient requirements
+    if (Object.keys(currentIngredientRequirements).length > 0) {
+        html += '<div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem;">';
+        html += '<span style="color: #666;">Legend: </span>';
+        html += '<span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 8px; margin: 0 5px;">Green</span> = Used in plan';
+        html += '<span style="background: #ff8c00; color: white; padding: 2px 6px; border-radius: 8px; margin: 0 5px;">Orange</span> = Required count';
+        html += '</div>';
+    }
+    
     html += '<div class="ingredient-grid">';
     for (var i = 0; i < sortedIngredients.length; i++) {
+        var ingredientName = sortedIngredients[i][0];
+        var actualCount = sortedIngredients[i][1];
+        
+        html += '<div class="ingredient-item-wrapper">';
         html += '<div class="ingredient-item">';
-        html += '<span class="ingredient-name">' + sortedIngredients[i][0] + '</span>';
-        html += '<span class="ingredient-count">' + sortedIngredients[i][1] + '</span>';
+        html += '<span class="ingredient-name">' + ingredientName + '</span>';
+        html += '<div class="ingredient-counts">';
+        html += '<span class="ingredient-count">' + actualCount + '</span>';
+        
+        // Check if this ingredient was in the requirements
+        var requiredCount = null;
+        for (var reqIngredient in currentIngredientRequirements) {
+            if (currentIngredientRequirements.hasOwnProperty(reqIngredient)) {
+                // Check if the shopping list ingredient contains the required ingredient
+                if (ingredientName.toLowerCase().indexOf(reqIngredient) !== -1 || 
+                    reqIngredient.indexOf(ingredientName.toLowerCase()) !== -1) {
+                    requiredCount = currentIngredientRequirements[reqIngredient];
+                    break;
+                }
+            }
+        }
+        
+        // Display required count in orange if this was a requested ingredient
+        if (requiredCount !== null) {
+            html += '<span class="ingredient-count-required">' + requiredCount + '</span>';
+        }
+        
+        html += '</div>';
+        html += '</div>';
+        
+        // Display recipes that use this ingredient
+        if (ingredientRecipes[ingredientName]) {
+            html += '<div class="ingredient-recipes-list">';
+            html += '<span class="ingredient-recipes-label">Used in: </span>';
+            for (var r = 0; r < ingredientRecipes[ingredientName].length; r++) {
+                var recipeInfo = ingredientRecipes[ingredientName][r];
+                html += '<span class="ingredient-recipe-tag">' + recipeInfo.name;
+                html += ' <small>(' + recipeInfo.day + ' ' + recipeInfo.mealTime + ')</small></span>';
+                if (r < ingredientRecipes[ingredientName].length - 1) {
+                    html += ', ';
+                }
+            }
+            html += '</div>';
+        }
+        
         html += '</div>';
     }
     html += '</div>';
@@ -886,7 +954,7 @@ function showIngredientInputModal() {
     html += '<button class="close-btn" onclick="closeIngredientInputModal()">&times;</button>';
     html += '</div>';
     html += '<div class="modal-body">';
-    html += '<p style="margin-bottom: 20px; color: #666;">Specify which ingredients should appear in your weekly meal plan and how many times:</p>';
+    html += '<p style="margin-bottom: 20px; color: #666;">Specify which ingredients should appear in your weekly meal plan and how many times. Click the <strong style="color: #28a745;">+</strong> button to add more ingredients:</p>';
     html += '<div class="ingredient-input-container" id="ingredientInputContainer">';
     html += '<div class="ingredient-input-row">';
     html += '<input type="text" class="ingredient-input-field" placeholder="Enter ingredient (e.g., carrot)" />';
@@ -957,6 +1025,9 @@ function generateMealPlanWithIngredients() {
     
     // Close the modal
     closeIngredientInputModal();
+    
+    // Store ingredient requirements globally for shopping list display
+    currentIngredientRequirements = ingredientRequirements;
     
     // Generate meal plan based on ingredients
     var result = createMealPlanWithIngredients(ingredientRequirements);
