@@ -91,7 +91,7 @@ function switchSection(sectionId) {
 async function loadRecipes() {
     try {
         // First, load from CSV file
-        var response = await fetch('recipe_dataset.csv');
+        var response = await fetch('recipe_dataset copia.csv');
         if (!response.ok) {
             throw new Error('CSV file not found');
         }
