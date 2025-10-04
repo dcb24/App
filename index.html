@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Planning App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-utensils"></i> Meal Planning App</h1>
+            <p>Plan your meals and discover new recipes</p>
+        </header>
+
+        <nav class="main-nav">
+            <button class="nav-btn active" data-section="recipes">
+                <i class="fas fa-book"></i> View Recipes
+            </button>
+            <button class="nav-btn" data-section="add-recipe">
+                <i class="fas fa-plus"></i> Add Recipe
+            </button>
+            <button class="nav-btn" data-section="random-recipe">
+                <i class="fas fa-random"></i> Random Recipe
+            </button>
+        </nav>
+
+        <!-- Recipes Section -->
+        <section id="recipes" class="section active">
+            <div class="section-header">
+                <h2>Recipe Collection</h2>
+                <div class="search-controls">
+                    <input type="text" id="searchInput" placeholder="Search recipes...">
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="Appetizer">Appetizer</option>
+                        <option value="Main Course">Main Course</option>
+                        <option value="Dessert">Dessert</option>
+                        <option value="Soup">Soup</option>
+                        <option value="Salad">Salad</option>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Snack">Snack</option>
+                        <option value="Beverage">Beverage</option>
+                    </select>
+                    <select id="cuisineFilter">
+                        <option value="">All Cuisines</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Mexican">Mexican</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Indian">Indian</option>
+                        <option value="American">American</option>
+                        <option value="French">French</option>
+                        <option value="Japanese">Japanese</option>
+                        <option value="Thai">Thai</option>
+                        <option value="Greek">Greek</option>
+                        <option value="Korean">Korean</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="Mediterranean">Mediterranean</option>
+                        <option value="Middle Eastern">Middle Eastern</option>
+                        <option value="Vietnamese">Vietnamese</option>
+                    </select>
+                </div>
+            </div>
+            <div id="recipesList" class="recipes-grid">
+                <!-- Recipes will be loaded here -->
+            </div>
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading recipes...
+            </div>
+        </section>
+
+        <!-- Add Recipe Section -->
+        <section id="add-recipe" class="section">
+            <div class="section-header">
+                <h2>Add New Recipe</h2>
+                <p>Fill in all the details to add a new recipe to your collection</p>
+            </div>
+            <form id="recipeForm" class="recipe-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recipeName">Recipe Name *</label>
+                        <input type="text" id="recipeName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipeCategory">Category *</label>
+                        <select id="recipeCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="Appetizer">Appetizer</option>
+                            <option value="Main Course">Main Course</option>
+                            <option value="Dessert">Dessert</option>
+                            <option value="Soup">Soup</option>
+                            <option value="Salad">Salad</option>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Dinner">Dinner</option>
+                            <option value="Snack">Snack</option>
+                            <option value="Beverage">Beverage</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recipeCuisine">Cuisine *</label>
+                        <select id="recipeCuisine" required>
+                            <option value="">Select Cuisine</option>
+                            <option value="Italian">Italian</option>
+                            <option value="Mexican">Mexican</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Indian">Indian</option>
+                            <option value="American">American</option>
+                            <option value="French">French</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="Thai">Thai</option>
+                            <option value="Greek">Greek</option>
+                            <option value="Korean">Korean</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="Mediterranean">Mediterranean</option>
+                            <option value="Middle Eastern">Middle Eastern</option>
+                            <option value="Vietnamese">Vietnamese</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipeCookingMethod">Cooking Method *</label>
+                        <select id="recipeCookingMethod" required>
+                            <option value="">Select Method</option>
+                            <option value="Baking">Baking</option>
+                            <option value="Grilling">Grilling</option>
+                            <option value="Frying">Frying</option>
+                            <option value="Boiling">Boiling</option>
+                            <option value="Steaming">Steaming</option>
+                            <option value="Sautéing">Sautéing</option>
+                            <option value="Roasting">Roasting</option>
+                            <option value="Slow Cooking">Slow Cooking</option>
+                            <option value="Raw">Raw</option>
+                            <option value="Microwaving">Microwaving</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recipeDifficulty">Difficulty *</label>
+                        <select id="recipeDifficulty" required>
+                            <option value="">Select Difficulty</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipeServings">Servings *</label>
+                        <input type="number" id="recipeServings" min="1" max="20" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recipePrepTime">Prep Time (minutes) *</label>
+                        <input type="number" id="recipePrepTime" min="0" max="300" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipeCookTime">Cook Time (minutes) *</label>
+                        <input type="number" id="recipeCookTime" min="0" max="300" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recipeCalories">Calories per Serving *</label>
+                        <input type="number" id="recipeCalories" min="0" max="2000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipeRating">Rating (1-5) *</label>
+                        <input type="number" id="recipeRating" min="1" max="5" step="0.1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipeIngredients">Ingredients *</label>
+                    <textarea id="recipeIngredients" placeholder="Enter ingredients separated by commas..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipeInstructions">Instructions *</label>
+                    <textarea id="recipeInstructions" placeholder="Enter cooking instructions..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipeAuthor">Author *</label>
+                    <input type="text" id="recipeAuthor" required>
+                </div>
+
+                <div class="dietary-options">
+                    <h3>Dietary Information</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="recipeVegetarian">
+                            <span class="checkmark"></span>
+                            Vegetarian
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="recipeVegan">
+                            <span class="checkmark"></span>
+                            Vegan
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="recipeGlutenFree">
+                            <span class="checkmark"></span>
+                            Gluten Free
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="recipeDairyFree">
+                            <span class="checkmark"></span>
+                            Dairy Free
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-plus"></i> Add Recipe
+                </button>
+            </form>
+        </section>
+
+        <!-- Random Recipe Section -->
+        <section id="random-recipe" class="section">
+            <div class="section-header">
+                <h2>Random Recipe Generator</h2>
+                <p>Get inspired with a random recipe from your collection</p>
+            </div>
+            <div class="random-recipe-container">
+                <button id="generateRandom" class="random-btn">
+                    <i class="fas fa-random"></i> Generate Random Recipe
+                </button>
+                <div id="randomRecipeDisplay" class="random-recipe-display">
+                    <!-- Random recipe will be displayed here -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
