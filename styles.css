@@ -305,14 +305,16 @@ header p {
     min-height: 100px;
 }
 
-.dietary-options {
+.dietary-options,
+.cuisine-options {
     margin: 30px 0;
     padding: 20px;
     background: #f8f9fa;
     border-radius: 8px;
 }
 
-.dietary-options h3 {
+.dietary-options h3,
+.cuisine-options h3 {
     margin-bottom: 15px;
     color: #333;
 }
@@ -336,7 +338,7 @@ header p {
 }
 
 .submit-btn {
-    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #f0763e 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -359,7 +361,7 @@ header p {
 }
 
 .edit-recipe-btn {
-    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #f0763e 100%);
     color: white;
     border: none;
     padding: 12px 30px;
@@ -495,7 +497,7 @@ header p {
 }
 
 .replace-btn:hover {
-    background: #e8739d;
+    background: #f0763e;
     -webkit-transform: translateY(-1px);
     transform: translateY(-1px);
 }
@@ -598,7 +600,7 @@ header p {
 }
 
 .random-option-btn {
-    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #f0763e 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -633,7 +635,7 @@ header p {
 }
 
 .generate-plan-btn {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #f0763e 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -655,7 +657,7 @@ header p {
 }
 
 .generate-plan-btn-ingredients {
-    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #f0763e 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -789,7 +791,7 @@ header p {
 }
 
 .replace-btn:hover {
-    background: #e8739d;
+    background: #f0763e;
     transform: scale(1.05);
 }
 
@@ -929,7 +931,7 @@ header p {
 }
 
 .random-btn {
-    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #f0763e 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -1215,7 +1217,8 @@ header p {
         padding: 0;
     }
     
-    .dietary-options {
+    .dietary-options,
+    .cuisine-options {
         margin: 20px 0;
         padding: 15px;
     }
@@ -1270,7 +1273,7 @@ header p {
 }
 
 .edit-recipe-btn-header {
-    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #f0763e 100%);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -1573,7 +1576,7 @@ header p {
 }
 
 .generate-ingredients-plan-btn {
-    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #f0763e 100%);
     color: white;
     border: none;
     padding: 15px 30px;

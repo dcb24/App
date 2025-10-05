@@ -328,10 +328,23 @@ function handleFormSubmit(e) {
     var isEditing = editingRecipeId !== undefined && editingRecipeId !== '';
     
     // Get form data
+    // Collect selected cuisine tags
+    var cuisineCheckboxes = document.querySelectorAll('.cuisine-checkbox:checked');
+    var selectedCuisines = [];
+    for (var i = 0; i < cuisineCheckboxes.length; i++) {
+        selectedCuisines.push(cuisineCheckboxes[i].value);
+    }
+    
+    // Validate at least one cuisine is selected
+    if (selectedCuisines.length === 0) {
+        alert('Please select at least one cuisine tag.');
+        return;
+    }
+    
     var recipeData = {
         name: document.getElementById('recipeName').value,
         category: document.getElementById('recipeCategory').value,
-        cuisine: document.getElementById('recipeCuisine').value,
+        cuisine: selectedCuisines.join(', '),
         cooking_method: document.getElementById('recipeCookingMethod').value,
         difficulty: document.getElementById('recipeDifficulty').value,
         prep_time_minutes: document.getElementById('recipePrepTime').value,
@@ -586,7 +599,23 @@ function editRecipe(recipeId) {
     // Populate the form with recipe data
     document.getElementById('recipeName').value = recipe.name;
     document.getElementById('recipeCategory').value = recipe.category;
-    document.getElementById('recipeCuisine').value = recipe.cuisine;
+    
+    // Handle cuisine checkboxes
+    var cuisineTags = recipe.cuisine ? recipe.cuisine.split(',').map(function(tag) {
+        return tag.trim();
+    }) : [];
+    var allCuisineCheckboxes = document.querySelectorAll('.cuisine-checkbox');
+    for (var i = 0; i < allCuisineCheckboxes.length; i++) {
+        var checkbox = allCuisineCheckboxes[i];
+        checkbox.checked = false; // Reset all first
+        for (var j = 0; j < cuisineTags.length; j++) {
+            if (checkbox.value === cuisineTags[j]) {
+                checkbox.checked = true;
+                break;
+            }
+        }
+    }
+    
     document.getElementById('recipeCookingMethod').value = recipe.cooking_method;
     document.getElementById('recipeDifficulty').value = recipe.difficulty;
     document.getElementById('recipePrepTime').value = recipe.prep_time_minutes;
@@ -624,6 +653,12 @@ function editRecipe(recipeId) {
 function cancelEdit() {
     // Reset form
     recipeForm.reset();
+    
+    // Reset cuisine checkboxes
+    var allCuisineCheckboxes = document.querySelectorAll('.cuisine-checkbox');
+    for (var i = 0; i < allCuisineCheckboxes.length; i++) {
+        allCuisineCheckboxes[i].checked = false;
+    }
     
     // Clear editing state
     delete recipeForm.dataset.editingRecipeId;

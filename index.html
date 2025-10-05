@@ -59,7 +59,7 @@
                         -->
                     </select>
                     <select id="cuisineFilter">
-                        <option value="">Recetas</option>
+                        <option value="">ssss</option>
                         <option value="Saludable">Saludable</option>
                         <option value="Internacional">Internacional</option>
                         <option value="Verano">Verano</option>
@@ -135,11 +135,43 @@
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="recipeCuisine">Cuisine * (comma-separated for multiple tags)</label>
-                        <input type="text" id="recipeCuisine" placeholder="e.g., Saludable, Vegetariano" required>
+                <div class="cuisine-options">
+                    <h3>Cuisine Tags * (select at least one)</h3>
+                    <div class="checkbox-group" id="cuisineCheckboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="cuisine-checkbox" value="Saludable">
+                            <span class="checkmark"></span>
+                            Saludable
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="cuisine-checkbox" value="Internacional">
+                            <span class="checkmark"></span>
+                            Internacional
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="cuisine-checkbox" value="Verano">
+                            <span class="checkmark"></span>
+                            Verano
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="cuisine-checkbox" value="Invierno">
+                            <span class="checkmark"></span>
+                            Invierno
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="cuisine-checkbox" value="Rápido">
+                            <span class="checkmark"></span>
+                            Rápido
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="cuisine-checkbox" value="Vegetariano">
+                            <span class="checkmark"></span>
+                            Vegetariano
+                        </label>
                     </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
                         <label for="recipeCookingMethod">Cooking Method *</label>
                         <select id="recipeCookingMethod" required>
@@ -155,6 +187,9 @@
                             <option value="Raw">Raw</option>
                             <option value="Microwaving">Microwaving</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <!-- Placeholder for layout balance -->
                     </div>
                 </div>
 
