@@ -462,7 +462,10 @@ function showRecipeDetails(recipeId) {
     var html = '<div class="modal-content">';
     html += '<div class="modal-header">';
     html += '<h2>' + recipe.name + '</h2>';
+    html += '<div class="modal-header-buttons">';
+    html += '<button class="edit-recipe-btn-header" onclick="editRecipe(\'' + recipe.recipe_id + '\')"><i class="fas fa-edit"></i> Edit</button>';
     html += '<button class="close-btn" onclick="closeRecipeModal()">&times;</button>';
+    html += '</div>';
     html += '</div>';
     html += '<div class="modal-body">';
     html += '<div class="recipe-details-grid">';
@@ -502,9 +505,6 @@ function showRecipeDetails(recipeId) {
     html += '<div class="instructions-section">';
     html += '<h3>Instructions</h3>';
     html += '<div class="instructions-text">' + recipe.instructions + '</div>';
-    html += '</div>';
-    html += '<div class="recipe-actions" style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e9ecef; text-align: center;">';
-    html += '<button class="edit-recipe-btn" onclick="editRecipe(\'' + recipe.recipe_id + '\')"><i class="fas fa-edit"></i> Edit Recipe</button>';
     html += '</div></div></div>';
     
     modal.innerHTML = html;

@@ -1115,6 +1115,21 @@ header p {
         width: 100%;
         justify-content: center;
     }
+    
+    .modal-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.3rem;
+        width: 100%;
+        order: 1;
+    }
+    
+    .modal-header-buttons {
+        order: 2;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1245,6 +1260,33 @@ header p {
 .modal-header h2 {
     color: #333;
     margin: 0;
+    flex: 1;
+}
+
+.modal-header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-recipe-btn-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.edit-recipe-btn-header:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .close-btn {
