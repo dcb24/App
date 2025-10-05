@@ -995,10 +995,40 @@ function generateIngredientList() {
     html += '</div>';
     html += '<div class="recipe-list">';
     html += '<h4>Recipes in this plan:</h4>';
+    // Group recipes by day and mealTime
+    var daysOfWeek = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+    var dayMeals = {};
+    for (var i = 0; i < daysOfWeek.length; i++) {
+        dayMeals[daysOfWeek[i]] = { lunch: [], dinner: [] };
+    }
     for (var i = 0; i < allRecipes.length; i++) {
+        var rec = allRecipes[i];
+        if (rec.day && rec.mealTime && dayMeals[rec.day]) {
+            if (rec.mealTime === 'lunch' || rec.mealTime === 'dinner') {
+                dayMeals[rec.day][rec.mealTime].push(rec.name);
+            }
+        }
+    }
+    for (var i = 0; i < daysOfWeek.length; i++) {
+        var day = daysOfWeek[i];
         html += '<div class="recipe-item">';
-        html += '<span class="recipe-item-name">' + allRecipes[i].name + '</span>';
-        html += '<span class="recipe-item-day">' + allRecipes[i].day + ' ' + allRecipes[i].mealTime + '</span>';
+        html += '<strong>' + day + '</strong><br>';
+        // Lunch
+        if (dayMeals[day].lunch.length > 0) {
+            html += '<span>&bull; ';
+            html += dayMeals[day].lunch.join(' and ');
+            html += '</span><br>';
+        } else {
+            html += '<span>&bull; (No lunch planned)</span><br>';
+        }
+        // Dinner
+        if (dayMeals[day].dinner.length > 0) {
+            html += '<span>&bull; ';
+            html += dayMeals[day].dinner.join(' and ');
+            html += '</span>';
+        } else {
+            html += '<span>&bull; (No dinner planned)</span>';
+        }
         html += '</div>';
     }
     html += '</div>';
