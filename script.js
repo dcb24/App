@@ -1140,20 +1140,21 @@ function generateIngredientList() {
             }
         }
     }
+    // Render each day with lunch and dinner on separate lines, with asterisk
     for (var i = 0; i < daysOfWeek.length; i++) {
         var day = daysOfWeek[i];
         html += '<div class="recipe-item">';
-        html += '<strong>' + day + '</strong><br>';
+        html += '<strong>' + day + ':</strong><br>';
         // Lunch
-        html += '<span>&bull; ';
+        html += '<span style="display:block;">&nbsp;&nbsp;* ';
         if (dayMeals[day].lunch.length > 0) {
             html += dayMeals[day].lunch.join(' and ');
         } else {
             html += '(No lunch planned)';
         }
-        html += '</span><br>';
+        html += '</span>';
         // Dinner
-        html += '<span>&bull; ';
+        html += '<span style="display:block;">&nbsp;&nbsp;* ';
         if (dayMeals[day].dinner.length > 0) {
             html += dayMeals[day].dinner.join(' and ');
         } else {
