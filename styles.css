@@ -1092,6 +1092,11 @@ header p {
     
     .ingredient-input-modal .modal-content {
         max-width: 100%;
+        width: calc(100vw - 20px);
+    }
+    
+    .modal-body {
+        padding: 15px;
     }
     
     .ingredient-input-container,
@@ -1102,25 +1107,39 @@ header p {
     .ingredient-input-row,
     .required-meal-row {
         gap: 6px;
+        width: 100%;
     }
     
     .ingredient-input-field {
         padding: 10px 8px;
         font-size: 0.9rem;
+        min-width: 0;
+        flex: 1;
     }
     
     .ingredient-count-field {
         padding: 10px 8px;
         font-size: 0.9rem;
         max-width: 60px;
+        min-width: 60px;
+        flex: 0 0 60px;
+    }
+    
+    .required-meal-select {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+        min-width: 0;
+        flex: 1;
     }
     
     .add-ingredient-btn,
     .remove-ingredient-btn {
         width: 38px;
         height: 38px;
+        min-width: 38px;
         padding: 8px;
         font-size: 1rem;
+        flex: 0 0 38px;
     }
     
     .submit-btn {

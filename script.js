@@ -477,7 +477,7 @@ function generateMealPlan() {
         return;
     }
 
-    var days = ['Lunes', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
     mealPlan = {};
     var usedRecipes = []; // Track used recipes to avoid repetition
 
@@ -583,7 +583,7 @@ function generateMealForTime(mealTime, usedRecipes) {
 }
 
 function displayMealPlan() {
-    var days = ['Lunes', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
     
     var html = '<div class="meal-plan-week">';
     for (var i = 0; i < days.length; i++) {
@@ -732,7 +732,7 @@ function closeMealReplacement() {
 function selectRandomMeal(day, mealTime) {
     // Get all recipes already in the meal plan
     var usedRecipeIds = [];
-    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
     for (var d = 0; d < days.length; d++) {
         var currentDay = days[d];
         if (mealPlan[currentDay]) {
@@ -1220,7 +1220,7 @@ function generateMealPlanWithIngredients() {
 }
 
 function createMealPlanWithIngredients(ingredientRequirements, requiredMealIds) {
-    var days = ['Lunes', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
     var newMealPlan = {};
     var usedRecipeIds = [];
     var ingredientUsage = {};
