@@ -1140,7 +1140,7 @@ function generateIngredientList() {
             }
         }
     }
-    // Render each day in a box, with lunch and dinner on their own lines, each with an asterisk
+    // Render each day in a box, with lunch and dinner on their own lines, each with a bullet
     html += '<div class="plan-days-grid" style="display: flex; flex-wrap: wrap; gap: 12px;">';
     for (var i = 0; i < daysOfWeek.length; i++) {
         var day = daysOfWeek[i];
@@ -1148,7 +1148,7 @@ function generateIngredientList() {
         html += '<div class="plan-day-title" style="font-weight:bold;font-size:1.1em;margin-bottom:6px;">' + day + ':</div>';
         // Lunch
         html += '<div class="plan-meal-row" style="margin-bottom:4px;">';
-        html += '<span style="font-weight:bold;">&nbsp;&nbsp;* </span>';
+        html += '<span style="font-weight:bold;font-size:1.2em;vertical-align:middle;">&nbsp;&nbsp;&#8226; </span>';
         if (dayMeals[day].lunch.length > 0) {
             html += '<span>' + dayMeals[day].lunch.join(' and ') + '</span>';
         } else {
@@ -1157,7 +1157,7 @@ function generateIngredientList() {
         html += '</div>';
         // Dinner
         html += '<div class="plan-meal-row">';
-        html += '<span style="font-weight:bold;">&nbsp;&nbsp;* </span>';
+        html += '<span style="font-weight:bold;font-size:1.2em;vertical-align:middle;">&nbsp;&nbsp;&#8226; </span>';
         if (dayMeals[day].dinner.length > 0) {
             html += '<span>' + dayMeals[day].dinner.join(' and ') + '</span>';
         } else {
@@ -1167,9 +1167,68 @@ function generateIngredientList() {
         html += '</div>';
     }
     html += '</div>';
+    // Add copy meal plan button
+    html += '<button id="copyMealPlanBtn" class="copy-meal-plan-btn" style="margin-top: 15px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 8px;">';
+    html += '<i class="fas fa-copy"></i> Copy Meal Plan';
+    html += '</button>';
     html += '</div>';
     
     ingredientList.innerHTML = html;
+    
+    // Add event listener to copy button
+    var copyBtn = document.getElementById('copyMealPlanBtn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+            copyMealPlanToClipboard(dayMeals);
+        });
+    }
+}
+
+function copyMealPlanToClipboard(dayMeals) {
+    var daysOfWeek = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+    var textOutput = '';
+    
+    for (var i = 0; i < daysOfWeek.length; i++) {
+        var day = daysOfWeek[i];
+        textOutput += day + '\n';
+        
+        // Lunch
+        if (dayMeals[day].lunch.length > 0) {
+            textOutput += dayMeals[day].lunch.join(' and ') + '\n';
+        } else {
+            textOutput += '(No lunch planned)\n';
+        }
+        
+        // Dinner
+        if (dayMeals[day].dinner.length > 0) {
+            textOutput += dayMeals[day].dinner.join(' and ') + '\n';
+        } else {
+            textOutput += '(No dinner planned)\n';
+        }
+        
+        // Add blank line between days except for the last day
+        if (i < daysOfWeek.length - 1) {
+            textOutput += '\n';
+        }
+    }
+    
+    // Copy to clipboard
+    navigator.clipboard.writeText(textOutput).then(function() {
+        // Show success message
+        var btn = document.getElementById('copyMealPlanBtn');
+        if (btn) {
+            var originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            btn.style.backgroundColor = '#28a745';
+            
+            setTimeout(function() {
+                btn.innerHTML = originalHTML;
+                btn.style.backgroundColor = '#007bff';
+            }, 2000);
+        }
+    }).catch(function(err) {
+        alert('Failed to copy to clipboard: ' + err);
+    });
 }
 
 function downloadRecipesCSV() {
