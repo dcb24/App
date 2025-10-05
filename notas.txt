@@ -8,11 +8,13 @@
 *Opción de editar receta
 
 *MANUALMENTE Ordenar alfabéticamente las recetas
--Cambiar Recipes in this plan: para que salga Lunes: * * Martes: * *
+*Cambiar Recipes in this plan: para que salga Lunes: * * Martes: * *
 
 Botón para copiar la lista de ingrdientes pero con formato.
 
-Múltiples etiquetas del segundo tipo?
+*Múltiples etiquetas del segundo tipo?
+
+Required mal ? 
 
 Hacer dataset real 
 Traducir
