@@ -1219,6 +1219,17 @@ function generateMealPlanWithIngredients() {
     }
 }
 
+// Helper function to shuffle an array using Fisher-Yates algorithm
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
+
 function createMealPlanWithIngredients(ingredientRequirements, requiredMealIds) {
     var days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
     var newMealPlan = {};
@@ -1274,6 +1285,9 @@ function createMealPlanWithIngredients(ingredientRequirements, requiredMealIds) 
         mealSlots.push({ day: days[i], mealTime: 'dinner' });
     }
     
+    // Shuffle meal slots to randomize placement
+    shuffleArray(mealSlots);
+    
     // First, place required meals in random slots
     for (var i = 0; i < requiredMealsToPlace.length; i++) {
         var meal = requiredMealsToPlace[i];
@@ -1325,15 +1339,30 @@ function createMealPlanWithIngredients(ingredientRequirements, requiredMealIds) 
         }
     }
     
-    // Fill remaining slots with ingredient-priority meals
+    // Create shuffled array of day-mealTime combinations for remaining slots
+    var remainingSlots = [];
     for (var i = 0; i < days.length; i++) {
         var day = days[i];
-        
         if (!newMealPlan[day].lunch) {
-            newMealPlan[day].lunch = selectMealWithIngredientPriority(lunchRecipes, ingredientUsage, usedRecipeIds, 'lunch');
+            remainingSlots.push({ day: day, mealTime: 'lunch' });
         }
-        
         if (!newMealPlan[day].dinner) {
+            remainingSlots.push({ day: day, mealTime: 'dinner' });
+        }
+    }
+    
+    // Shuffle remaining slots
+    shuffleArray(remainingSlots);
+    
+    // Fill remaining slots with ingredient-priority meals in random order
+    for (var i = 0; i < remainingSlots.length; i++) {
+        var slot = remainingSlots[i];
+        var day = slot.day;
+        var mealTime = slot.mealTime;
+        
+        if (mealTime === 'lunch') {
+            newMealPlan[day].lunch = selectMealWithIngredientPriority(lunchRecipes, ingredientUsage, usedRecipeIds, 'lunch');
+        } else {
             newMealPlan[day].dinner = selectMealWithIngredientPriority(dinnerRecipes, ingredientUsage, usedRecipeIds, 'dinner');
         }
     }
