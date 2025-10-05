@@ -90,8 +90,9 @@ function switchSection(sectionId) {
 
 async function loadRecipes() {
     try {
-        // First, load from CSV file
-        var response = await fetch('recipe_dataset.csv?cb=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+        // First, load from CSV file with cache-busting
+        var timestamp = new Date().getTime();
+        var response = await fetch('recipe_dataset.csv?v=' + timestamp);
         if (!response.ok) {
             throw new Error('CSV file not found');
         }
@@ -99,15 +100,31 @@ async function loadRecipes() {
         var csvText = await response.text();
         recipes = parseCSV(csvText);
         
+        // Keep track of CSV recipe IDs to prevent conflicts
+        var csvRecipeIds = {};
+        for (var i = 0; i < recipes.length; i++) {
+            csvRecipeIds[recipes[i].recipe_id] = true;
+        }
+        
+        console.log('Loaded ' + recipes.length + ' recipes from CSV');
+        
         // Then, load any user-added recipes from localStorage
         var storedRecipes = localStorage.getItem('userRecipes');
         if (storedRecipes) {
             try {
                 var userRecipes = JSON.parse(storedRecipes);
-                // Merge user recipes with CSV recipes
+                var addedCount = 0;
+                // Merge user recipes with CSV recipes, but skip any with IDs that match CSV recipes
                 for (var i = 0; i < userRecipes.length; i++) {
-                    recipes.push(userRecipes[i]);
+                    // Only add user recipes that don't conflict with CSV recipe IDs
+                    if (!csvRecipeIds[userRecipes[i].recipe_id]) {
+                        recipes.push(userRecipes[i]);
+                        addedCount++;
+                    } else {
+                        console.warn('Skipping localStorage recipe with conflicting ID: ' + userRecipes[i].recipe_id);
+                    }
                 }
+                console.log('Added ' + addedCount + ' user recipes from localStorage');
             } catch (e) {
                 console.error('Error parsing stored recipes:', e);
             }
