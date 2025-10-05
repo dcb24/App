@@ -137,16 +137,8 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="recipeCuisine">Cuisine *</label>
-                        <select id="recipeCuisine" required>
-                            <option value="">Select Cuisine</option>
-                            <option value="Saludable">Saludable</option>
-                            <option value="Internacional">Internacional</option>
-                            <option value="Verano">Verano</option>
-                            <option value="Invierno">Invierno</option>
-                            <option value="Rápido">Rápido</option>
-                            <option value="Vegetariano">Vegetariano</option>
-                        </select>
+                        <label for="recipeCuisine">Cuisine * (comma-separated for multiple tags)</label>
+                        <input type="text" id="recipeCuisine" placeholder="e.g., Saludable, Vegetariano" required>
                     </div>
                     <div class="form-group">
                         <label for="recipeCookingMethod">Cooking Method *</label>

@@ -10,7 +10,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #333;
-    background: linear-gradient(135deg, #f5461a 0%, #e8730d 100%);
+    background: linear-gradient(135deg, #5aad93 0%, #036f4e 100%);
     min-height: 100vh;
 }
 
@@ -191,7 +191,7 @@ header p {
 .search-controls input:focus,
 .search-controls select:focus {
     outline: none;
-    border-color: #ea7928;
+    border-color: #f5461a;
 }
 
 /* Recipe Grid */
@@ -214,7 +214,7 @@ header p {
 .recipe-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    border-color: #5aad93;
+    border-color: #f5461a;
 }
 
 .recipe-card h3 {
@@ -231,7 +231,7 @@ header p {
 }
 
 .recipe-meta span {
-    background: #5aad93;
+    background: #f5461a;
     color: white;
     padding: 4px 8px;
     border-radius: 12px;
@@ -297,7 +297,7 @@ header p {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #5aad93;
+    border-color: #f5461a;
 }
 
 .form-group textarea {
@@ -336,7 +336,7 @@ header p {
 }
 
 .submit-btn {
-    background: linear-gradient(135deg, #5aad93 0%, #036f4e 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -355,11 +355,11 @@ header p {
 
 .submit-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 25px rgba(245, 70, 26, 0.3);
 }
 
 .edit-recipe-btn {
-    background: linear-gradient(135deg, #5aad93 0%, #036f4e 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
     color: white;
     border: none;
     padding: 12px 30px;
@@ -375,7 +375,7 @@ header p {
 
 .edit-recipe-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 25px rgba(245, 70, 26, 0.4);
 }
 
 .form-buttons {
@@ -434,7 +434,7 @@ header p {
     margin-bottom: 10px;
     text-align: center;
     padding-bottom: 8px;
-    border-bottom: 2px solid #5aad93;
+    border-bottom: 2px solid #f5461a;
 }
 
 .meal-slot {
@@ -442,7 +442,7 @@ header p {
     padding: 12px;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 4px solid #5aad93;
+    border-left: 4px solid #f5461a;
 }
 
 .meal-slot.lunch {
@@ -481,7 +481,7 @@ header p {
 }
 
 .replace-btn {
-    background: #5aad93;
+    background: #f5461a;
     color: white;
     border: none;
     padding: 6px 12px;
@@ -495,7 +495,7 @@ header p {
 }
 
 .replace-btn:hover {
-    background: #5a6fd8;
+    background: #e8739d;
     -webkit-transform: translateY(-1px);
     transform: translateY(-1px);
 }
@@ -553,7 +553,7 @@ header p {
 
 .meal-replacement-select:focus {
     outline: none;
-    border-color: #5aad93;
+    border-color: #f5461a;
 }
 
 .confirm-replacement-btn {
@@ -594,11 +594,11 @@ header p {
 
 .search-container input:focus {
     outline: none;
-    border-color: #5aad93;
+    border-color: #f5461a;
 }
 
 .random-option-btn {
-    background: linear-gradient(135deg, #5aad93 0%, #036f4e 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -619,7 +619,7 @@ header p {
 .random-option-btn:hover {
     -webkit-transform: translateY(-3px);
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 30px rgba(245, 70, 26, 0.4);
 }
 
 .plan-controls {
@@ -655,7 +655,7 @@ header p {
 }
 
 .generate-plan-btn-ingredients {
-    background: linear-gradient(135deg, #5aad93 0%, #036f4e 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -673,7 +673,7 @@ header p {
 
 .generate-plan-btn-ingredients:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 30px rgba(245, 70, 26, 0.4);
 }
 
 .clear-plan-btn {
@@ -728,7 +728,7 @@ header p {
     margin-bottom: 15px;
     text-align: center;
     padding-bottom: 10px;
-    border-bottom: 2px solid #5aad93;
+    border-bottom: 2px solid #f5461a;
 }
 
 .meal-slot {
@@ -736,7 +736,7 @@ header p {
     padding: 15px;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 4px solid #5aad93;
+    border-left: 4px solid #f5461a;
 }
 
 .meal-slot.lunch {
@@ -778,7 +778,7 @@ header p {
 }
 
 .replace-btn {
-    background: #5aad93;
+    background: #f5461a;
     color: white;
     border: none;
     padding: 5px 10px;
@@ -789,7 +789,7 @@ header p {
 }
 
 .replace-btn:hover {
-    background: #5a6fd8;
+    background: #e8739d;
     transform: scale(1.05);
 }
 
@@ -874,7 +874,7 @@ header p {
 
 .ingredient-recipes-label {
     font-weight: 600;
-    color: #5aad93;
+    color: #f5461a;
     margin-right: 5px;
 }
 
@@ -929,7 +929,7 @@ header p {
 }
 
 .random-btn {
-    background: linear-gradient(135deg, #5aad93 0%, #036f4e 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -946,7 +946,7 @@ header p {
 
 .random-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 30px rgba(245, 70, 26, 0.4);
 }
 
 .random-recipe-display {
@@ -979,12 +979,12 @@ header p {
     background: white;
     padding: 15px;
     border-radius: 8px;
-    border-left: 4px solid #5aad93;
+    border-left: 4px solid #f5461a;
 }
 
 .random-recipe-display .detail-label {
     font-weight: 600;
-    color: #5aad93;
+    color: #f5461a;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1270,7 +1270,7 @@ header p {
 }
 
 .edit-recipe-btn-header {
-    background: linear-gradient(135deg, #5aad93 0%, #036f4e 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -1286,7 +1286,7 @@ header p {
 
 .edit-recipe-btn-header:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 4px 15px rgba(245, 70, 26, 0.4);
 }
 
 .close-btn {
@@ -1325,7 +1325,7 @@ header p {
     background: #f8f9fa;
     padding: 20px;
     border-radius: 10px;
-    border-left: 4px solid #5aad93;
+    border-left: 4px solid #f5461a;
 }
 
 .detail-section h3 {
@@ -1410,7 +1410,7 @@ header p {
     color: #333;
     margin-bottom: 15px;
     font-size: 1.3rem;
-    border-bottom: 2px solid #5aad93;
+    border-bottom: 2px solid #f5461a;
     padding-bottom: 10px;
 }
 
@@ -1493,7 +1493,7 @@ header p {
 
 .ingredient-input-field:focus {
     outline: none;
-    border-color: #5aad93;
+    border-color: #f5461a;
 }
 
 .ingredient-count-field {
@@ -1509,7 +1509,7 @@ header p {
 
 .ingredient-count-field:focus {
     outline: none;
-    border-color: #5aad93;
+    border-color: #f5461a;
 }
 
 .required-meal-select {
@@ -1525,7 +1525,7 @@ header p {
 
 .required-meal-select:focus {
     outline: none;
-    border-color: #5aad93;
+    border-color: #f5461a;
 }
 
 .add-ingredient-btn {
@@ -1573,7 +1573,7 @@ header p {
 }
 
 .generate-ingredients-plan-btn {
-    background: linear-gradient(135deg, #5aad93 0%, #036f4e 100%);
+    background: linear-gradient(135deg, #f5461a 0%, #e8739d 100%);
     color: white;
     border: none;
     padding: 15px 30px;
@@ -1590,7 +1590,7 @@ header p {
 
 .generate-ingredients-plan-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 30px rgba(245, 70, 26, 0.4);
 }
 
 .ingredient-warning {

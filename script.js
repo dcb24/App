@@ -266,7 +266,19 @@ function displayRecipes() {
         html += '<h3>' + recipe.name + '</h3>';
         html += '<div class="recipe-meta">';
         html += '<span>' + recipe.category + '</span>';
-        html += '<span>' + recipe.cuisine + '</span>';
+        
+        // Display multiple cuisine tags
+        if (recipe.cuisine) {
+            var cuisineTags = recipe.cuisine.split(',').map(function(tag) {
+                return tag.trim();
+            });
+            for (var j = 0; j < cuisineTags.length; j++) {
+                if (cuisineTags[j]) {
+                    html += '<span>' + cuisineTags[j] + '</span>';
+                }
+            }
+        }
+        
         html += '</div>';
         html += '</div>';
     }
@@ -285,7 +297,20 @@ function filterRecipes() {
                            recipe.ingredients.toLowerCase().indexOf(searchTerm) !== -1 ||
                            recipe.author.toLowerCase().indexOf(searchTerm) !== -1;
         var matchesCategory = !selectedCategory || recipe.category === selectedCategory;
-        var matchesCuisine = !selectedCuisine || recipe.cuisine === selectedCuisine;
+        
+        // Support multiple cuisine tags separated by commas
+        var matchesCuisine = !selectedCuisine;
+        if (selectedCuisine && recipe.cuisine) {
+            var cuisineTags = recipe.cuisine.split(',').map(function(tag) {
+                return tag.trim();
+            });
+            for (var j = 0; j < cuisineTags.length; j++) {
+                if (cuisineTags[j] === selectedCuisine) {
+                    matchesCuisine = true;
+                    break;
+                }
+            }
+        }
 
         if (matchesSearch && matchesCategory && matchesCuisine) {
             filteredRecipes.push(recipe);
@@ -417,7 +442,16 @@ function generateRandomRecipe() {
     var html = '<h3>' + recipe.name + '</h3>';
     html += '<div class="recipe-details">';
     html += '<div class="detail-item"><div class="detail-label">Category</div><div class="detail-value">' + recipe.category + '</div></div>';
-    html += '<div class="detail-item"><div class="detail-label">Cuisine</div><div class="detail-value">' + recipe.cuisine + '</div></div>';
+    
+    // Display multiple cuisine tags
+    var cuisineDisplay = recipe.cuisine;
+    if (recipe.cuisine) {
+        var cuisineTags = recipe.cuisine.split(',').map(function(tag) {
+            return tag.trim();
+        }).filter(function(tag) { return tag; });
+        cuisineDisplay = cuisineTags.join(', ');
+    }
+    html += '<div class="detail-item"><div class="detail-label">Cuisine</div><div class="detail-value">' + cuisineDisplay + '</div></div>';
     html += '<div class="detail-item"><div class="detail-label">Difficulty</div><div class="detail-value">' + recipe.difficulty + '</div></div>';
     //html += '<div class="detail-item"><div class="detail-label">Cooking Method</div><div class="detail-value">' + recipe.cooking_method + '</div></div>';
     html += '<div class="detail-item"><div class="detail-label">Prep Time</div><div class="detail-value">' + recipe.prep_time_minutes + ' minutes</div></div>';
@@ -472,7 +506,16 @@ function showRecipeDetails(recipeId) {
     html += '<div class="detail-section">';
     html += '<h3>Basic Information</h3>';
     html += '<p><strong>Category:</strong> ' + recipe.category + '</p>';
-    html += '<p><strong>Cuisine:</strong> ' + recipe.cuisine + '</p>';
+    
+    // Display multiple cuisine tags
+    var cuisineDisplay = recipe.cuisine;
+    if (recipe.cuisine) {
+        var cuisineTags = recipe.cuisine.split(',').map(function(tag) {
+            return tag.trim();
+        }).filter(function(tag) { return tag; });
+        cuisineDisplay = cuisineTags.join(', ');
+    }
+    html += '<p><strong>Cuisine:</strong> ' + cuisineDisplay + '</p>';
     html += '<p><strong>Difficulty:</strong> ' + recipe.difficulty + '</p>';
     html += '<p><strong>Cooking Method:</strong> ' + recipe.cooking_method + '</p>';
     html += '<p><strong>Rating:</strong> ★ ' + recipe.rating + '</p>';
