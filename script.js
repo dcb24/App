@@ -1227,7 +1227,7 @@ function generateIngredientList() {
         // Lunch
         html += '<div class="plan-meal-row" style="margin-bottom:6px;display:flex;align-items:flex-start;">';
         html += '<span style="display:inline-flex;align-items:center;margin-right:8px;">';
-        html += '<svg width="18" height="18" style="vertical-align:bottom;" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6" fill="#e0894c" /></svg>';
+        html += '<svg width="18" height="18" style="vertical-align:bottom;" viewBox="0 0 18 18"><circle cx="9" cy="9" r="3" fill="#e0894c" /></svg>';
         html += '</span>';
         if (dayMeals[day].lunch.length > 0) {
             html += '<span>' + dayMeals[day].lunch.map(function(name) {
@@ -1240,7 +1240,7 @@ function generateIngredientList() {
         // Dinner
         html += '<div class="plan-meal-row" style="display:flex;align-items:flex-start;">';
         html += '<span style="display:inline-flex;align-items:center;margin-right:8px;">';
-        html += '<svg width="18" height="18" style="vertical-align:middle;" viewBox="0 0 18 18"><circle cx="9" cy="14" r="6" fill="#a93046" /></svg>';
+        html += '<svg width="18" height="18" style="vertical-align:middle;" viewBox="0 0 18 18"><circle cx="9" cy="9" r="3" fill="#a93046" /></svg>';
         html += '</span>';
         if (dayMeals[day].dinner.length > 0) {
             html += '<span>' + dayMeals[day].dinner.map(function(name) {
