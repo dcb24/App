@@ -1079,6 +1079,43 @@ header p {
     .random-recipe-display {
         padding: 20px;
     }
+    
+    .ingredient-input-modal {
+        padding: 10px;
+    }
+    
+    .ingredient-input-modal .modal-content {
+        max-width: 100%;
+    }
+    
+    .ingredient-input-container,
+    .required-meals-container {
+        padding: 12px;
+    }
+    
+    .ingredient-input-row,
+    .required-meal-row {
+        gap: 6px;
+    }
+    
+    .ingredient-input-field {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+    }
+    
+    .ingredient-count-field {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+        max-width: 60px;
+    }
+    
+    .add-ingredient-btn,
+    .remove-ingredient-btn {
+        width: 38px;
+        height: 38px;
+        padding: 8px;
+        font-size: 1rem;
+    }
 }
 
 /* Recipe Modal Styles */
@@ -1308,9 +1345,10 @@ header p {
 .ingredient-input-row,
 .required-meal-row {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 15px;
     align-items: center;
+    width: 100%;
 }
 
 .ingredient-input-field {
@@ -1320,6 +1358,7 @@ header p {
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
+    min-width: 0;
 }
 
 .ingredient-input-field:focus {
@@ -1334,6 +1373,8 @@ header p {
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s ease;
+    min-width: 0;
+    max-width: 80px;
 }
 
 .ingredient-count-field:focus {
