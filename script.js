@@ -146,12 +146,17 @@ async function loadRecipes() {
 
 function parseCSV(csvText) {
     const lines = csvText.split('\n');
-    const headers = lines[0].split(',');
+    
+    // Detect delimiter (comma or semicolon)
+    const firstLine = lines[0];
+    const delimiter = firstLine.includes(';') ? ';' : ',';
+    
+    const headers = firstLine.split(delimiter);
     const recipes = [];
 
     for (let i = 1; i < lines.length; i++) {
         if (lines[i].trim()) {
-            const values = parseCSVLine(lines[i]);
+            const values = parseCSVLine(lines[i], delimiter);
             if (values.length === headers.length) {
                 const recipe = {};
                 headers.forEach((header, index) => {
@@ -165,7 +170,8 @@ function parseCSV(csvText) {
     return recipes;
 }
 
-function parseCSVLine(line) {
+function parseCSVLine(line, delimiter) {
+    delimiter = delimiter || ','; // Default to comma if not specified
     const result = [];
     let current = '';
     let inQuotes = false;
@@ -175,7 +181,7 @@ function parseCSVLine(line) {
         
         if (char === '"') {
             inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
+        } else if (char === delimiter && !inQuotes) {
             result.push(current);
             current = '';
         } else {
