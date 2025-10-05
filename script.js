@@ -1140,28 +1140,36 @@ function generateIngredientList() {
             }
         }
     }
-    // Render each day in a box, with lunch and dinner on their own lines, each with a bullet
-    html += '<div class="plan-days-grid" style="display: flex; flex-wrap: wrap; gap: 12px;">';
+    // Render each day in a vertical stack, with pretty SVG bullets for lunch and dinner
+    html += '<div class="plan-days-grid" style="display: flex; flex-direction: column; gap: 16px;">';
     for (var i = 0; i < daysOfWeek.length; i++) {
         var day = daysOfWeek[i];
-        html += '<div class="plan-day-box" style="background:#f8f8f8;border-radius:8px;padding:12px;min-width:180px;box-shadow:0 1px 4px #0001;">';
-        html += '<div class="plan-day-title" style="font-weight:bold;font-size:1.1em;margin-bottom:6px;">' + day + ':</div>';
+        html += '<div class="plan-day-box" style="background:#f8f8f8;border-radius:8px;padding:16px;min-width:220px;box-shadow:0 1px 4px #0001;display:flex;flex-direction:column;align-items:flex-start;">';
+        html += '<div class="plan-day-title" style="font-weight:bold;font-size:1.15em;margin-bottom:8px;letter-spacing:0.5px;">' + day + ':</div>';
         // Lunch
-        html += '<div class="plan-meal-row" style="margin-bottom:4px;">';
-        html += '<span style="font-weight:bold;font-size:1.2em;vertical-align:middle;">&nbsp;&nbsp;&#8226; </span>';
+        html += '<div class="plan-meal-row" style="margin-bottom:6px;display:flex;align-items:flex-start;">';
+        html += '<span style="display:inline-flex;align-items:center;margin-right:8px;">';
+        html += '<svg width="18" height="18" style="vertical-align:middle;" viewBox="0 0 18 18"><circle cx="9" cy="9" r="6" fill="#4caf50" /></svg>';
+        html += '</span>';
         if (dayMeals[day].lunch.length > 0) {
-            html += '<span>' + dayMeals[day].lunch.join(' and ') + '</span>';
+            html += '<span>' + dayMeals[day].lunch.map(function(name) {
+                return '<span style="font-weight:500;">' + name + '</span>';
+            }).join('<span style="color:#bbb;"> &amp; </span>') + '</span>';
         } else {
-            html += '<span style="color:#888;">(No lunch planned)</span>';
+            html += '<span style="color:#bbb;">(No lunch planned)</span>';
         }
         html += '</div>';
         // Dinner
-        html += '<div class="plan-meal-row">';
-        html += '<span style="font-weight:bold;font-size:1.2em;vertical-align:middle;">&nbsp;&nbsp;&#8226; </span>';
+        html += '<div class="plan-meal-row" style="display:flex;align-items:flex-start;">';
+        html += '<span style="display:inline-flex;align-items:center;margin-right:8px;">';
+        html += '<svg width="18" height="18" style="vertical-align:middle;" viewBox="0 0 18 18"><rect x="3" y="3" width="12" height="12" rx="3" fill="#ff9800" /></svg>';
+        html += '</span>';
         if (dayMeals[day].dinner.length > 0) {
-            html += '<span>' + dayMeals[day].dinner.join(' and ') + '</span>';
+            html += '<span>' + dayMeals[day].dinner.map(function(name) {
+                return '<span style="font-weight:500;">' + name + '</span>';
+            }).join('<span style="color:#bbb;"> &amp; </span>') + '</span>';
         } else {
-            html += '<span style="color:#888;">(No dinner planned)</span>';
+            html += '<span style="color:#bbb;">(No dinner planned)</span>';
         }
         html += '</div>';
         html += '</div>';
@@ -1181,7 +1189,46 @@ function generateIngredientList() {
     var copyBtn = document.getElementById('copyMealPlanBtn');
     if (copyBtn) {
         copyBtn.addEventListener('click', function() {
-            copyMealPlanToClipboard(dayMeals);
+            // Use pretty bullets in the copied text
+            var bulletLunch = '•';
+            var bulletDinner = '■';
+            var daysOfWeek = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+            var textOutput = '';
+            for (var i = 0; i < daysOfWeek.length; i++) {
+                var day = daysOfWeek[i];
+                textOutput += day + '\n';
+                // Lunch
+                if (dayMeals[day].lunch.length > 0) {
+                    textOutput += '  ' + bulletLunch + ' ' + dayMeals[day].lunch.join(' & ') + '\n';
+                } else {
+                    textOutput += '  ' + bulletLunch + ' (No lunch planned)\n';
+                }
+                // Dinner
+                if (dayMeals[day].dinner.length > 0) {
+                    textOutput += '  ' + bulletDinner + ' ' + dayMeals[day].dinner.join(' & ') + '\n';
+                } else {
+                    textOutput += '  ' + bulletDinner + ' (No dinner planned)\n';
+                }
+                // Add blank line between days except for the last day
+                if (i < daysOfWeek.length - 1) {
+                    textOutput += '\n';
+                }
+            }
+            navigator.clipboard.writeText(textOutput).then(function() {
+                // Show success message
+                var btn = document.getElementById('copyMealPlanBtn');
+                if (btn) {
+                    var originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btn.style.backgroundColor = '#28a745';
+                    setTimeout(function() {
+                        btn.innerHTML = originalHTML;
+                        btn.style.backgroundColor = '#007bff';
+                    }, 2000);
+                }
+            }).catch(function(err) {
+                alert('Failed to copy to clipboard: ' + err);
+            });
         });
     }
 }
