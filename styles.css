@@ -231,12 +231,19 @@ header p {
 }
 
 .recipe-meta span {
-    background: #f5461a;
     color: white;
     padding: 4px 8px;
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 500;
+}
+
+.recipe-meta .category-tag {
+    background: #f5461a;
+}
+
+.recipe-meta .cuisine-tag {
+    background: #f0763e;
 }
 
 .recipe-info {

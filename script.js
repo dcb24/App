@@ -265,7 +265,7 @@ function displayRecipes() {
         html += '<div class="recipe-card" onclick="showRecipeDetails(\'' + recipe.recipe_id + '\')">';
         html += '<h3>' + recipe.name + '</h3>';
         html += '<div class="recipe-meta">';
-        html += '<span>' + recipe.category + '</span>';
+        html += '<span class="category-tag">' + recipe.category + '</span>';
         
         // Display multiple cuisine tags
         if (recipe.cuisine) {
@@ -274,7 +274,7 @@ function displayRecipes() {
             });
             for (var j = 0; j < cuisineTags.length; j++) {
                 if (cuisineTags[j]) {
-                    html += '<span>' + cuisineTags[j] + '</span>';
+                    html += '<span class="cuisine-tag">' + cuisineTags[j] + '</span>';
                 }
             }
         }
@@ -1240,7 +1240,7 @@ function generateIngredientList() {
         // Dinner
         html += '<div class="plan-meal-row" style="display:flex;align-items:flex-start;">';
         html += '<span style="display:inline-flex;align-items:center;margin-right:8px;">';
-        html += '<svg width="18" height="18" style="vertical-align:middle;" viewBox="0 0 18 18"><rect x="3" y="3" width="12" height="12" rx="3" fill="#ff9800" /></svg>';
+        html += '<svg width="18" height="18" style="vertical-align:middle;" viewBox="0 0 18 18"><circle cx="9" cy="12" r="6" fill="#ff9800" /></svg>';
         html += '</span>';
         if (dayMeals[day].dinner.length > 0) {
             html += '<span>' + dayMeals[day].dinner.map(function(name) {
@@ -1269,7 +1269,7 @@ function generateIngredientList() {
         copyBtn.addEventListener('click', function() {
             // Use pretty bullets in the copied text
             var bulletLunch = '•';
-            var bulletDinner = '■';
+            var bulletDinner = '•';
             var daysOfWeek = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
             var textOutput = '';
             for (var i = 0; i < daysOfWeek.length; i++) {
