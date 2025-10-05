@@ -477,7 +477,7 @@ function generateMealPlan() {
         return;
     }
 
-    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Lunes', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     mealPlan = {};
     var usedRecipes = []; // Track used recipes to avoid repetition
 
@@ -583,7 +583,7 @@ function generateMealForTime(mealTime, usedRecipes) {
 }
 
 function displayMealPlan() {
-    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Lunes', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     
     var html = '<div class="meal-plan-week">';
     for (var i = 0; i < days.length; i++) {
@@ -593,7 +593,7 @@ function displayMealPlan() {
         
         // Lunch section
         html += '<div class="meal-slot lunch">';
-        html += '<h4>Lunch</h4>';
+        //html += '<h4>Lunch</h4>';
         if (mealPlan[day].lunch) {
             for (var j = 0; j < mealPlan[day].lunch.length; j++) {
                 var recipe = mealPlan[day].lunch[j];
@@ -610,7 +610,7 @@ function displayMealPlan() {
         
         // Dinner section
         html += '<div class="meal-slot dinner">';
-        html += '<h4>Dinner</h4>';
+        //html += '<h4>Dinner</h4>';
         if (mealPlan[day].dinner) {
             for (var j = 0; j < mealPlan[day].dinner.length; j++) {
                 var recipe = mealPlan[day].dinner[j];
@@ -1220,7 +1220,7 @@ function generateMealPlanWithIngredients() {
 }
 
 function createMealPlanWithIngredients(ingredientRequirements, requiredMealIds) {
-    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    var days = ['Lunes', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     var newMealPlan = {};
     var usedRecipeIds = [];
     var ingredientUsage = {};
