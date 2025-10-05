@@ -1140,29 +1140,33 @@ function generateIngredientList() {
             }
         }
     }
-    // Render each day with lunch and dinner on separate lines, with asterisk
+    // Render each day in a box, with lunch and dinner on their own lines, each with an asterisk
+    html += '<div class="plan-days-grid" style="display: flex; flex-wrap: wrap; gap: 12px;">';
     for (var i = 0; i < daysOfWeek.length; i++) {
         var day = daysOfWeek[i];
-        html += '<div class="recipe-item">';
-        html += '<strong>' + day + ':</strong><br>';
+        html += '<div class="plan-day-box" style="background:#f8f8f8;border-radius:8px;padding:12px;min-width:180px;box-shadow:0 1px 4px #0001;">';
+        html += '<div class="plan-day-title" style="font-weight:bold;font-size:1.1em;margin-bottom:6px;">' + day + ':</div>';
         // Lunch
-        html += '<span style="display:block;">&nbsp;&nbsp;* ';
+        html += '<div class="plan-meal-row" style="margin-bottom:4px;">';
+        html += '<span style="font-weight:bold;">&nbsp;&nbsp;* </span>';
         if (dayMeals[day].lunch.length > 0) {
-            html += dayMeals[day].lunch.join(' and ');
+            html += '<span>' + dayMeals[day].lunch.join(' and ') + '</span>';
         } else {
-            html += '(No lunch planned)';
+            html += '<span style="color:#888;">(No lunch planned)</span>';
         }
-        html += '</span>';
+        html += '</div>';
         // Dinner
-        html += '<span style="display:block;">&nbsp;&nbsp;* ';
+        html += '<div class="plan-meal-row">';
+        html += '<span style="font-weight:bold;">&nbsp;&nbsp;* </span>';
         if (dayMeals[day].dinner.length > 0) {
-            html += dayMeals[day].dinner.join(' and ');
+            html += '<span>' + dayMeals[day].dinner.join(' and ') + '</span>';
         } else {
-            html += '(No dinner planned)';
+            html += '<span style="color:#888;">(No dinner planned)</span>';
         }
-        html += '</span>';
+        html += '</div>';
         html += '</div>';
     }
+    html += '</div>';
     html += '</div>';
     
     ingredientList.innerHTML = html;
