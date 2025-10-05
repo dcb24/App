@@ -1339,32 +1339,44 @@ function createMealPlanWithIngredients(ingredientRequirements, requiredMealIds) 
         }
     }
     
-    // Create shuffled array of day-mealTime combinations for remaining slots
-    var remainingSlots = [];
+    // Create list of remaining slots
+    var remainingLunchSlots = [];
+    var remainingDinnerSlots = [];
     for (var i = 0; i < days.length; i++) {
         var day = days[i];
         if (!newMealPlan[day].lunch) {
-            remainingSlots.push({ day: day, mealTime: 'lunch' });
+            remainingLunchSlots.push(day);
         }
         if (!newMealPlan[day].dinner) {
-            remainingSlots.push({ day: day, mealTime: 'dinner' });
+            remainingDinnerSlots.push(day);
         }
     }
     
-    // Shuffle remaining slots
-    shuffleArray(remainingSlots);
+    // Pre-select all recipes for lunch
+    var selectedLunchMeals = [];
+    for (var i = 0; i < remainingLunchSlots.length; i++) {
+        var meal = selectMealWithIngredientPriority(lunchRecipes, ingredientUsage, usedRecipeIds, 'lunch');
+        selectedLunchMeals.push(meal);
+    }
     
-    // Fill remaining slots with ingredient-priority meals in random order
-    for (var i = 0; i < remainingSlots.length; i++) {
-        var slot = remainingSlots[i];
-        var day = slot.day;
-        var mealTime = slot.mealTime;
-        
-        if (mealTime === 'lunch') {
-            newMealPlan[day].lunch = selectMealWithIngredientPriority(lunchRecipes, ingredientUsage, usedRecipeIds, 'lunch');
-        } else {
-            newMealPlan[day].dinner = selectMealWithIngredientPriority(dinnerRecipes, ingredientUsage, usedRecipeIds, 'dinner');
-        }
+    // Pre-select all recipes for dinner
+    var selectedDinnerMeals = [];
+    for (var i = 0; i < remainingDinnerSlots.length; i++) {
+        var meal = selectMealWithIngredientPriority(dinnerRecipes, ingredientUsage, usedRecipeIds, 'dinner');
+        selectedDinnerMeals.push(meal);
+    }
+    
+    // Shuffle the selected meals to randomize their placement
+    shuffleArray(selectedLunchMeals);
+    shuffleArray(selectedDinnerMeals);
+    
+    // Assign shuffled meals to slots
+    for (var i = 0; i < remainingLunchSlots.length; i++) {
+        newMealPlan[remainingLunchSlots[i]].lunch = selectedLunchMeals[i];
+    }
+    
+    for (var i = 0; i < remainingDinnerSlots.length; i++) {
+        newMealPlan[remainingDinnerSlots[i]].dinner = selectedDinnerMeals[i];
     }
     
     // Check for unused ingredients
