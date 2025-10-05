@@ -5,7 +5,7 @@
 *Que las recetas incluidas no aparezcan necesariamente el primer día
 *Al añadir recetas, que las ponga bien según sean cena/comida
 
-Opción de editar receta
+-Opción de editar receta
 
 *MANUALMENTE Ordenar alfabéticamente las recetas
 -Cambiar Recipes in this plan: para que salga Lunes: * * Martes: * *

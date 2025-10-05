@@ -1145,21 +1145,21 @@ function generateIngredientList() {
         html += '<div class="recipe-item">';
         html += '<strong>' + day + '</strong><br>';
         // Lunch
+        html += '<span>&bull; ';
         if (dayMeals[day].lunch.length > 0) {
-            html += '<span>&bull; ';
             html += dayMeals[day].lunch.join(' and ');
-            html += '</span><br>';
         } else {
-            html += '<span>&bull; (No lunch planned)</span><br>';
+            html += '(No lunch planned)';
         }
+        html += '</span><br>';
         // Dinner
+        html += '<span>&bull; ';
         if (dayMeals[day].dinner.length > 0) {
-            html += '<span>&bull; ';
             html += dayMeals[day].dinner.join(' and ');
-            html += '</span>';
         } else {
-            html += '<span>&bull; (No dinner planned)</span>';
+            html += '(No dinner planned)';
         }
+        html += '</span>';
         html += '</div>';
     }
     html += '</div>';
