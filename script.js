@@ -479,12 +479,13 @@ function generateMealPlan() {
 
     var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     mealPlan = {};
+    var usedRecipes = []; // Track used recipes to avoid repetition
 
     for (var i = 0; i < days.length; i++) {
         var day = days[i];
         mealPlan[day] = {
-            lunch: generateMealForTime('lunch'),
-            dinner: generateMealForTime('dinner')
+            lunch: generateMealForTime('lunch', usedRecipes),
+            dinner: generateMealForTime('dinner', usedRecipes)
         };
     }
 
@@ -501,14 +502,39 @@ function generateMealPlan() {
     }
 }
 
-function generateMealForTime(mealTime) {
+function generateMealForTime(mealTime, usedRecipes) {
+    usedRecipes = usedRecipes || [];
+    
+    // First try to find recipes that haven't been used yet
     var suitableRecipes = [];
     for (var i = 0; i < recipes.length; i++) {
         var recipe = recipes[i];
-        if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
-            suitableRecipes.push(recipe);
-        } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
-            suitableRecipes.push(recipe);
+        var isUsed = false;
+        for (var j = 0; j < usedRecipes.length; j++) {
+            if (usedRecipes[j] === recipe.recipe_id) {
+                isUsed = true;
+                break;
+            }
+        }
+        
+        if (!isUsed) {
+            if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
+                suitableRecipes.push(recipe);
+            } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
+                suitableRecipes.push(recipe);
+            }
+        }
+    }
+
+    // If we don't have enough unused recipes, fall back to all recipes
+    if (suitableRecipes.length === 0) {
+        for (var i = 0; i < recipes.length; i++) {
+            var recipe = recipes[i];
+            if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
+                suitableRecipes.push(recipe);
+            } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
+                suitableRecipes.push(recipe);
+            }
         }
     }
 
@@ -517,18 +543,41 @@ function generateMealForTime(mealTime) {
     }
 
     var randomRecipe = suitableRecipes[Math.floor(Math.random() * suitableRecipes.length)];
+    usedRecipes.push(randomRecipe.recipe_id);
     
     if (randomRecipe.is_full_meal === 'True') {
         return [randomRecipe];
     } else {
-        // For half meals, we need two recipes
+        // For half meals, we need two recipes - try to find an unused one
         var secondRecipe = null;
         for (var i = 0; i < suitableRecipes.length; i++) {
-            if (suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
+            var isSecondUsed = false;
+            for (var j = 0; j < usedRecipes.length; j++) {
+                if (usedRecipes[j] === suitableRecipes[i].recipe_id) {
+                    isSecondUsed = true;
+                    break;
+                }
+            }
+            if (!isSecondUsed && suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
                 secondRecipe = suitableRecipes[i];
                 break;
             }
         }
+        
+        // If no unused half meal found, try any other half meal
+        if (!secondRecipe) {
+            for (var i = 0; i < suitableRecipes.length; i++) {
+                if (suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
+                    secondRecipe = suitableRecipes[i];
+                    break;
+                }
+            }
+        }
+        
+        if (secondRecipe) {
+            usedRecipes.push(secondRecipe.recipe_id);
+        }
+        
         return secondRecipe ? [randomRecipe, secondRecipe] : [randomRecipe];
     }
 }
@@ -681,13 +730,55 @@ function closeMealReplacement() {
 }
 
 function selectRandomMeal(day, mealTime) {
+    // Get all recipes already in the meal plan
+    var usedRecipeIds = [];
+    var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    for (var d = 0; d < days.length; d++) {
+        var currentDay = days[d];
+        if (mealPlan[currentDay]) {
+            if (mealPlan[currentDay].lunch) {
+                for (var m = 0; m < mealPlan[currentDay].lunch.length; m++) {
+                    usedRecipeIds.push(mealPlan[currentDay].lunch[m].recipe_id);
+                }
+            }
+            if (mealPlan[currentDay].dinner) {
+                for (var m = 0; m < mealPlan[currentDay].dinner.length; m++) {
+                    usedRecipeIds.push(mealPlan[currentDay].dinner[m].recipe_id);
+                }
+            }
+        }
+    }
+    
+    // First try to find recipes that aren't already in the plan
     var suitableRecipes = [];
     for (var i = 0; i < recipes.length; i++) {
         var recipe = recipes[i];
-        if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
-            suitableRecipes.push(recipe);
-        } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
-            suitableRecipes.push(recipe);
+        var isUsed = false;
+        for (var j = 0; j < usedRecipeIds.length; j++) {
+            if (usedRecipeIds[j] === recipe.recipe_id) {
+                isUsed = true;
+                break;
+            }
+        }
+        
+        if (!isUsed) {
+            if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
+                suitableRecipes.push(recipe);
+            } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
+                suitableRecipes.push(recipe);
+            }
+        }
+    }
+    
+    // If no unused recipes, fall back to all suitable recipes
+    if (suitableRecipes.length === 0) {
+        for (var i = 0; i < recipes.length; i++) {
+            var recipe = recipes[i];
+            if (mealTime === 'lunch' && recipe.is_lunch === 'True') {
+                suitableRecipes.push(recipe);
+            } else if (mealTime === 'dinner' && recipe.is_dinner === 'True') {
+                suitableRecipes.push(recipe);
+            }
         }
     }
 
@@ -701,14 +792,32 @@ function selectRandomMeal(day, mealTime) {
     if (randomRecipe.is_full_meal === 'True') {
         mealPlan[day][mealTime] = [randomRecipe];
     } else {
-        // For half meals, try to find a second recipe
+        // For half meals, try to find a second unused recipe
         var secondRecipe = null;
         for (var i = 0; i < suitableRecipes.length; i++) {
-            if (suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
+            var isUsed = false;
+            for (var j = 0; j < usedRecipeIds.length; j++) {
+                if (usedRecipeIds[j] === suitableRecipes[i].recipe_id) {
+                    isUsed = true;
+                    break;
+                }
+            }
+            if (!isUsed && suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
                 secondRecipe = suitableRecipes[i];
                 break;
             }
         }
+        
+        // If no unused half meal, try any other half meal
+        if (!secondRecipe) {
+            for (var i = 0; i < suitableRecipes.length; i++) {
+                if (suitableRecipes[i].recipe_id !== randomRecipe.recipe_id && suitableRecipes[i].is_full_meal === 'False') {
+                    secondRecipe = suitableRecipes[i];
+                    break;
+                }
+            }
+        }
+        
         mealPlan[day][mealTime] = secondRecipe ? [randomRecipe, secondRecipe] : [randomRecipe];
     }
 
