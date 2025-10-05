@@ -1168,9 +1168,11 @@ function generateIngredientList() {
     }
     html += '</div>';
     // Add copy meal plan button
-    html += '<button id="copyMealPlanBtn" class="copy-meal-plan-btn" style="margin-top: 15px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 8px;">';
+    html += '<div style="text-align: center; margin-top: 20px;">';
+    html += '<button id="copyMealPlanBtn" class="copy-meal-plan-btn" style="padding: 12px 24px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">';
     html += '<i class="fas fa-copy"></i> Copy Meal Plan';
     html += '</button>';
+    html += '</div>';
     html += '</div>';
     
     ingredientList.innerHTML = html;
