@@ -51,6 +51,12 @@ function setupEventListeners() {
     // Form submission
     recipeForm.addEventListener('submit', handleFormSubmit);
 
+    // Cancel edit button
+    var cancelEditBtn = document.getElementById('cancelEditBtn');
+    if (cancelEditBtn) {
+        cancelEditBtn.addEventListener('click', cancelEdit);
+    }
+
     // Random recipe generation
     generateRandomBtn.addEventListener('click', generateRandomRecipe);
 
@@ -292,9 +298,12 @@ function filterRecipes() {
 function handleFormSubmit(e) {
     e.preventDefault();
     
+    // Check if we're editing an existing recipe
+    var editingRecipeId = recipeForm.dataset.editingRecipeId;
+    var isEditing = editingRecipeId !== undefined && editingRecipeId !== '';
+    
     // Get form data
-    var newRecipe = {
-        recipe_id: 'user_' + Date.now().toString(),
+    var recipeData = {
         name: document.getElementById('recipeName').value,
         category: document.getElementById('recipeCategory').value,
         cuisine: document.getElementById('recipeCuisine').value,
@@ -309,7 +318,6 @@ function handleFormSubmit(e) {
         ingredients: document.getElementById('recipeIngredients').value,
         instructions: document.getElementById('recipeInstructions').value,
         author: document.getElementById('recipeAuthor').value,
-        date_created: new Date().toISOString().split('T')[0],
         is_vegetarian: document.getElementById('recipeVegetarian').checked ? 'True' : 'False',
         is_vegan: document.getElementById('recipeVegan').checked ? 'True' : 'False',
         is_gluten_free: document.getElementById('recipeGlutenFree').checked ? 'True' : 'False',
@@ -319,19 +327,61 @@ function handleFormSubmit(e) {
         is_dinner: 'True',
         is_sweet: 'False'
     };
-
-    // Add to recipes array
-    recipes.push(newRecipe);
-    filteredRecipes = recipes.slice();
-
-    // Save user recipes to localStorage
-    saveUserRecipes();
-
-    // Reset form
-    recipeForm.reset();
-
-    // Show success message
-    alert('Recipe added successfully and saved!');
+    
+    if (isEditing) {
+        // Update existing recipe
+        for (var i = 0; i < recipes.length; i++) {
+            if (recipes[i].recipe_id === editingRecipeId) {
+                // Keep the original recipe_id, date_created, and other preserved fields
+                recipeData.recipe_id = recipes[i].recipe_id;
+                recipeData.date_created = recipes[i].date_created;
+                
+                // Update the recipe
+                recipes[i] = recipeData;
+                break;
+            }
+        }
+        filteredRecipes = recipes.slice();
+        
+        // Save user recipes to localStorage
+        saveUserRecipes();
+        
+        // Reset form and editing state
+        recipeForm.reset();
+        delete recipeForm.dataset.editingRecipeId;
+        
+        // Reset submit button text
+        var submitBtn = recipeForm.querySelector('.submit-btn');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-plus"></i> Add Recipe';
+        }
+        
+        // Hide cancel button
+        var cancelBtn = document.getElementById('cancelEditBtn');
+        if (cancelBtn) {
+            cancelBtn.style.display = 'none';
+        }
+        
+        // Show success message
+        alert('Recipe updated successfully!');
+    } else {
+        // Add new recipe
+        recipeData.recipe_id = 'user_' + Date.now().toString();
+        recipeData.date_created = new Date().toISOString().split('T')[0];
+        
+        // Add to recipes array
+        recipes.push(recipeData);
+        filteredRecipes = recipes.slice();
+        
+        // Save user recipes to localStorage
+        saveUserRecipes();
+        
+        // Reset form
+        recipeForm.reset();
+        
+        // Show success message
+        alert('Recipe added successfully and saved!');
+    }
 
     // Switch to recipes view
     switchSection('recipes');
@@ -453,9 +503,8 @@ function showRecipeDetails(recipeId) {
     html += '<h3>Instructions</h3>';
     html += '<div class="instructions-text">' + recipe.instructions + '</div>';
     html += '</div>';
-    html += '<div class="recipe-meta-info">';
-    html += '<p><strong>Author:</strong> ' + recipe.author + '</p>';
-    html += '<p><strong>Date Created:</strong> ' + recipe.date_created + '</p>';
+    html += '<div class="recipe-actions" style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e9ecef; text-align: center;">';
+    html += '<button class="edit-recipe-btn" onclick="editRecipe(\'' + recipe.recipe_id + '\')"><i class="fas fa-edit"></i> Edit Recipe</button>';
     html += '</div></div></div>';
     
     modal.innerHTML = html;
@@ -468,6 +517,88 @@ function closeRecipeModal() {
     if (modal) {
         modal.remove();
     }
+}
+
+function editRecipe(recipeId) {
+    // Find the recipe
+    var recipe = null;
+    for (var i = 0; i < recipes.length; i++) {
+        if (recipes[i].recipe_id === recipeId) {
+            recipe = recipes[i];
+            break;
+        }
+    }
+    
+    if (!recipe) {
+        alert('Recipe not found!');
+        return;
+    }
+    
+    // Close the modal
+    closeRecipeModal();
+    
+    // Switch to add-recipe section
+    switchSection('add-recipe');
+    
+    // Populate the form with recipe data
+    document.getElementById('recipeName').value = recipe.name;
+    document.getElementById('recipeCategory').value = recipe.category;
+    document.getElementById('recipeCuisine').value = recipe.cuisine;
+    document.getElementById('recipeCookingMethod').value = recipe.cooking_method;
+    document.getElementById('recipeDifficulty').value = recipe.difficulty;
+    document.getElementById('recipePrepTime').value = recipe.prep_time_minutes;
+    document.getElementById('recipeCookTime').value = recipe.cook_time_minutes;
+    document.getElementById('recipeServings').value = recipe.servings;
+    document.getElementById('recipeCalories').value = recipe.calories_per_serving;
+    document.getElementById('recipeRating').value = recipe.rating;
+    document.getElementById('recipeIngredients').value = recipe.ingredients;
+    document.getElementById('recipeInstructions').value = recipe.instructions;
+    document.getElementById('recipeAuthor').value = recipe.author;
+    document.getElementById('recipeVegetarian').checked = recipe.is_vegetarian === 'True';
+    document.getElementById('recipeVegan').checked = recipe.is_vegan === 'True';
+    document.getElementById('recipeGlutenFree').checked = recipe.is_gluten_free === 'True';
+    document.getElementById('recipeDairyFree').checked = recipe.is_dairy_free === 'True';
+    
+    // Store the recipe ID being edited
+    recipeForm.dataset.editingRecipeId = recipeId;
+    
+    // Change the submit button text
+    var submitBtn = recipeForm.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Recipe';
+    }
+    
+    // Show cancel button
+    var cancelBtn = document.getElementById('cancelEditBtn');
+    if (cancelBtn) {
+        cancelBtn.style.display = 'inline-flex';
+    }
+    
+    // Scroll to top
+    window.scrollTo(0, 0);
+}
+
+function cancelEdit() {
+    // Reset form
+    recipeForm.reset();
+    
+    // Clear editing state
+    delete recipeForm.dataset.editingRecipeId;
+    
+    // Reset submit button text
+    var submitBtn = recipeForm.querySelector('.submit-btn');
+    if (submitBtn) {
+        submitBtn.innerHTML = '<i class="fas fa-plus"></i> Add Recipe';
+    }
+    
+    // Hide cancel button
+    var cancelBtn = document.getElementById('cancelEditBtn');
+    if (cancelBtn) {
+        cancelBtn.style.display = 'none';
+    }
+    
+    // Switch to recipes view
+    switchSection('recipes');
 }
 
 // Meal Planning Functions

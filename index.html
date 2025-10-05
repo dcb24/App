@@ -59,7 +59,7 @@
                         -->
                     </select>
                     <select id="cuisineFilter">
-                        <option value="">Cocinass</option>
+                        <option value="">Cocinas</option>
                         <option value="Saludable">Saludable</option>
                         <option value="Internacional">Internacional</option>
                         <option value="Verano">Verano</option>
@@ -245,9 +245,14 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-plus"></i> Add Recipe
-                </button>
+                <div class="form-buttons">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-plus"></i> Add Recipe
+                    </button>
+                    <button type="button" class="cancel-edit-btn" id="cancelEditBtn" style="display: none;">
+                        <i class="fas fa-times"></i> Cancel Edit
+                    </button>
+                </div>
             </form>
         </section>
 
