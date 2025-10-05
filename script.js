@@ -1227,7 +1227,7 @@ function generateIngredientList() {
         // Lunch
         html += '<div class="plan-meal-row" style="margin-bottom:6px;display:flex;align-items:flex-start;">';
         html += '<span style="display:inline-flex;align-items:center;margin-right:8px;">';
-        html += '<svg width="18" height="18" style="vertical-align:bottom;" viewBox="0 0 18 18"><circle cx="3" cy="3" r="3" fill="#e0894c" /></svg>';
+        html += '<svg width="18" height="18" style="vertical-align:bottom;" viewBox="0 0 18 18"><circle cx="12" cy="12" r="3" fill="#e0894c" /></svg>';
         html += '</span>';
         if (dayMeals[day].lunch.length > 0) {
             html += '<span>' + dayMeals[day].lunch.map(function(name) {
